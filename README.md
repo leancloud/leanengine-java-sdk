@@ -5,4 +5,4 @@ LeanEngine Java Middleware
 
 许可协议: MIT
 
-作者: wchen (wchen@leancloud.rocks)
+作者: lbt05 (lbt0506@gmail.com)
