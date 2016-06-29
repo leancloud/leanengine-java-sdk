@@ -11,10 +11,10 @@ import com.avos.avoscloud.AVUser;
 import cn.leancloud.EngineFunction;
 import cn.leancloud.EngineFunctionParam;
 
-public class AllFunctions {
+public class AllEngineFunctions {
   @EngineFunction
-  public static String hello(String name) {
-    return "hello " + name;
+  public static void hello() {
+    System.out.println("hello");
   }
 
   @EngineFunction("ping")

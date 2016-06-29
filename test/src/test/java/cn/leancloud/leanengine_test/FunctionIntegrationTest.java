@@ -49,6 +49,11 @@ public class FunctionIntegrationTest extends TestCase {
   }
 
   @Test
+  public void testHello() throws Exception {
+    AVCloud.callFunction("hello", null);
+  }
+
+  @Test
   public void testAVCloudFunction() throws Exception {
     Map<String, Object> params = new HashMap<String, Object>();
     params.put("ts", 123);

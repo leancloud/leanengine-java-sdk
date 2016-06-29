@@ -21,7 +21,7 @@ public class HelloServlet extends HttpServlet {
   @Override
   public void init() throws ServletException {
     super.init();
-    LeanEngine.register(AllFunctions.class);
+    LeanEngine.register(AllEngineFunctions.class);
     LeanEngine.register(AllEngineHook.class);
     LeanEngine.register(AllIMHook.class);
     AVOSCloud.initialize("uu2P5gNTxGhjyaJGAPPnjCtJ-gzGzoHsz", "j5lErUd6q7LhPD8CXhfmA2Rg",

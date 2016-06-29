@@ -21,7 +21,7 @@ public class ResponseUtil {
       }
     }
     return AVUtils.restfulCloudData(resp);
-  }
+  } 
 
   private static void removeType(JSONObject object) {
     if (object.containsKey("className") && object.containsKey(TYPE)) {

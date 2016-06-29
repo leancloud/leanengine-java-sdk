@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import cn.leancloud.EndpointParser.EndpointInfo;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.avos.avoscloud.AVException;
 import com.avos.avoscloud.AVUtils;
@@ -100,33 +101,29 @@ public class LeanEngine extends HttpServlet {
     } else {
       EngineHandlerInfo handler = funcs.get(internalEndpoint.getInternalEndpoint());
       try {
-        Object returnValue = handler.execute(req);
+        Object returnValue = handler.execute(req, internalEndpoint.isRPCcall());
         if (internalEndpoint.isNeedResponse()) {
-          String respJSONStr = null;
-          JSONObject result = new JSONObject();
-          result.put("result", AVUtils.getParsedObject(returnValue));
-          respJSONStr = result.toJSONString();
-          if (!internalEndpoint.isRPCcall()) {
-            respJSONStr = ResponseUtil.filterResponse(respJSONStr);
-          }
+          String respJSONStr = JSON.toJSONString(returnValue);
           resp.setContentType(JSON_CONTENT_TYPE);
           resp.getWriter().write(respJSONStr);
         }
 
-      } catch (InvalidParameterException e) {
+      } catch (IllegalArgumentException e) {
         if (internalEndpoint.isNeedResponse()) {
-          e.resp(resp);
+          InvalidParameterException ex = new InvalidParameterException();
+          ex.resp(resp);
+          ex.printStackTrace();
         }
-        e.printStackTrace();
       } catch (Exception e) {
         if (internalEndpoint.isNeedResponse()) {
           resp.setContentType(JSON_CONTENT_TYPE);
           JSONObject result = new JSONObject();
-          result.put("code", 400);
+          result.put("code",
+              e.getCause() instanceof AVException ? ((AVException) e.getCause()).getCode() : 1);
           result.put("error", e.getCause() != null ? e.getCause().getMessage() : e.getMessage());
           resp.getWriter().write(result.toJSONString());
         }
-        e.printStackTrace();
+        e.getCause().printStackTrace();
       }
     }
   }

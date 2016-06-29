@@ -32,7 +32,11 @@ public class EngineHookIntegrationTest extends TestCase {
     restData.put("star", 1);
     Map<String, Object> p = new HashMap<String, Object>();
     p.put("object", restData);
-    AVCloud.callFunction("hello/beforeSave", p);
+    Map<String, Object> result = AVCloud.callFunction("hello/beforeSave", p);
+    // assertEquals(1, result.get("star"));
+    restData.put("star", 40);
+    result = AVCloud.callFunction("hello/beforeSave", p);
+    // assertEquals(1, result.get("star"));
   }
 
   @Test

@@ -11,16 +11,17 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.avos.avoscloud.AVException;
 import com.avos.avoscloud.AVObject;
 import com.avos.avoscloud.AVUser;
 import com.avos.avoscloud.AVUtils;
 import com.avos.avoscloud.LogUtil;
 
-public class EngineHandlerInfo {
+public abstract class EngineHandlerInfo {
 
-  private static final String OBJECT = "object";
-  private static final String USER = "user";
+  static final String OBJECT = "object";
+  static final String USER = "user";
 
   public EngineHandlerInfo(String endpoint, Method handlerMethod,
       List<EngineFunctionParamInfo> params, Class returnType) {
@@ -54,8 +55,7 @@ public class EngineHandlerInfo {
     return methodParameterList;
   }
 
-  public Object execute(HttpServletRequest request) throws InvalidParameterException, IOException,
-      IllegalAccessException, InvocationTargetException {
+  public Object execute(HttpServletRequest request, boolean rpcCall) throws Exception {
     StringBuilder sb = new StringBuilder();
     String line = null;
     BufferedReader reader = request.getReader();
@@ -64,55 +64,26 @@ public class EngineHandlerInfo {
     }
     String requestBody = sb.toString();
     Object returnValue = null;
-    try {
-      switch (methodParameterList.size()) {
-        case 0:
-          returnValue = handlerMethod.invoke(null);
-          break;
-        case 1:
-          Object param = null;
-          // 不要想了这个地方肯定就是EngineHook,要么是user,要么是object
-          try {
-            if (!AVUtils.isBlankString(this.hookClass)) {
-              Map<String, Object> hookParams = JSON.parseObject(requestBody, Map.class);
-
-              String paramKey = null;
-              if (hookParams.containsKey(USER) && hookParams.get(USER) != null) {
-                param = new AVUser();
-                paramKey = USER;
-              } else if (hookParams.containsKey(OBJECT) && hookParams.get(OBJECT) != null) {
-                param = new AVObject(hookClass);
-                paramKey = OBJECT;
-              } else {
-                throw new InvalidParameterException();
-              }
-              EngineRequestContext.parseMetaData((Map<String, Object>) hookParams.get(paramKey));
-              AVUtils.copyPropertiesFromMapToAVObject(
-                  (Map<String, Object>) hookParams.get(paramKey), (AVObject) param);
-              returnValue = handlerMethod.invoke(null, param);
-            } else {
-              EngineFunctionParamInfo paramInfo = methodParameterList.get(0);
-              param = paramInfo.parseParams(requestBody);
-            }
-            // 这里是假设唯一的目标作为参数传递过来，而不是放在一个jsonObject中间
-            returnValue = handlerMethod.invoke(null, param);
-            break;
-          } catch (Exception e) {
-            // 如果解析出错了，就认为传递过来的是一个jsonObject可以按照多于1个参数的情况来解析
-          }
-        default:
-          Map jsonParams = JSON.parseObject(requestBody, Map.class);
-          Object[] params = new Object[methodParameterList.size()];
-          for (int index = 0; index < methodParameterList.size(); index++) {
-            Object p = jsonParams.get(methodParameterList.get(index).name);
-            params[index] = methodParameterList.get(index).parseParams(JSON.toJSONString(p));
-          }
-          returnValue = handlerMethod.invoke(null, params);
-      }
-    } catch (IllegalArgumentException e) {
-      throw new InvalidParameterException();
+    Object params = this.parseParams(requestBody);
+    returnValue =
+        methodParameterList.size() == 0 ? handlerMethod.invoke(null)
+            : params.getClass().isArray() ? handlerMethod.invoke(null, (Object[]) params)
+                : handlerMethod.invoke(null, params);
+    if (returnValue != null) {
+      returnValue = this.wrapperResponse(returnValue, requestBody, rpcCall);
     }
     return returnValue;
+  }
+
+  public abstract Object parseParams(String requestBody) throws InvalidParameterException;
+
+  public Object wrapperResponse(Object returnValue, String requestBody, boolean rpcCall) {
+    JSONObject result = new JSONObject();
+    result.put("result", AVUtils.getParsedObject(returnValue));
+    if (!rpcCall) {
+      ResponseUtil.filterResponse(result.toJSONString());
+    }
+    return result;
   }
 
   public static EngineHandlerInfo getEngineHandlerInfo(Method method, EngineFunction function) {
@@ -133,7 +104,7 @@ public class EngineHandlerInfo {
         }
       }
     }
-    return new EngineHandlerInfo(functionName, method, params, method.getReturnType());
+    return new EngineFunctionHandlerInfo(functionName, method, params, method.getReturnType());
   }
 
   public static EngineHandlerInfo getEngineHandlerInfo(Method method, EngineHook hook) {
@@ -144,13 +115,13 @@ public class EngineHandlerInfo {
     } else {
       params.add(new EngineFunctionParamInfo(AVObject.class, OBJECT));
     }
-    return new EngineHandlerInfo(EndpointParser.getInternalEndpoint(hook.className(), hook.type()),
-        method, params, null, hook.className());
+    return new EngineHookHandlerInfo(EndpointParser.getInternalEndpoint(hook.className(),
+        hook.type()), method, params, null, hook.className());
   }
 
   public static EngineHandlerInfo getEngineHandlerInfo(Method method, IMHook hook) {
     List<EngineFunctionParamInfo> params = new LinkedList<EngineFunctionParamInfo>();
     params.add(new EngineFunctionParamInfo(Map.class, OBJECT));
-    return new EngineHandlerInfo(hook.type().toString(), method, params, Map.class);
+    return new IMHookHandlerInfo(hook.type().toString(), method, params, Map.class);
   }
 }

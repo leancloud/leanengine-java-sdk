@@ -3,6 +3,8 @@ package org.example;
 import static org.junit.Assert.*;
 
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -11,6 +13,7 @@ import org.junit.Test;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.avos.avoscloud.AVObject;
 import com.avos.avoscloud.AVUser;
 import com.avos.avoscloud.AVUtils;
 import com.avos.avoscloud.AsyncHttpResponseHandler;
@@ -20,8 +23,11 @@ import com.avos.avoscloud.internal.InternalConfigurationController;
 import com.avos.avoscloud.okhttp.Request;
 import com.avos.avoscloud.okhttp.RequestBody;
 
+import cn.leancloud.EngineFunction;
+import cn.leancloud.EngineFunctionParam;
 import cn.leancloud.EngineFunctionParamInfo;
 import cn.leancloud.EngineHandlerInfo;
+import cn.leancloud.EngineHook;
 import cn.leancloud.ResponseUtil;
 
 public class FunctionsTest {

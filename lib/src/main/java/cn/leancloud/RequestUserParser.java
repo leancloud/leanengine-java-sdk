@@ -15,7 +15,6 @@ public class RequestUserParser {
 
   public static void parse(final HttpServletRequest req) {
     if (req.getAttribute(RequestAuth.ATTRIBUTE_KEY) == null) {
-      System.out.println("no attribute parsed");
       return;
     }
     String sessionToken =
