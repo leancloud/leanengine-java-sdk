@@ -11,6 +11,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.avos.avoscloud.AVException;
 import com.avos.avoscloud.AVObject;
@@ -79,9 +80,9 @@ public abstract class EngineHandlerInfo {
 
   public Object wrapperResponse(Object returnValue, String requestBody, boolean rpcCall) {
     JSONObject result = new JSONObject();
-    result.put("result", AVUtils.getParsedObject(returnValue));
+    result.put("result", AVUtils.getParsedObject(returnValue, true, false, true));
     if (!rpcCall) {
-      ResponseUtil.filterResponse(result.toJSONString());
+      return JSON.parse(ResponseUtil.filterResponse(result.toJSONString()));
     }
     return result;
   }
