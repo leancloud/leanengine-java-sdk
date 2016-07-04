@@ -12,12 +12,14 @@ import junit.framework.TestCase;
 import org.junit.Test;
 
 import com.avos.avoscloud.AVCloud;
+import com.avos.avoscloud.AVException;
 import com.avos.avoscloud.AVOSCloud;
 import com.avos.avoscloud.AVOSServices;
 import com.avos.avoscloud.AVObject;
 import com.avos.avoscloud.AVUser;
 import com.avos.avoscloud.AVUtils;
 import com.avos.avoscloud.PaasClient;
+import com.avos.avoscloud.internal.impl.EngineRequestSign;
 
 public class FunctionIntegrationTest extends TestCase {
 
@@ -112,6 +114,18 @@ public class FunctionIntegrationTest extends TestCase {
     assertEquals(list, result.get("list"));
     for (int i = 0; i < array.length; i++) {
       assertEquals(array[i], ((List) result.get("array")).get(i));
+    }
+  }
+
+  @Test
+  public void testQueryResult() throws AVException {
+    List<Map> result = AVCloud.callFunction("query", null);
+    for (Map m : result) {
+      assertNotNull(m.get("username"));
+    }
+    List<AVUser> userResults = AVCloud.rpcFunction("query", null);
+    for (AVUser u : userResults) {
+      assertNotNull(u.getUsername());
     }
   }
 }

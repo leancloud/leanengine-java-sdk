@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import cn.leancloud.LeanEngine;
 
 import com.avos.avoscloud.AVOSCloud;
+import com.avos.avoscloud.internal.impl.EngineRequestSign;
 
 @WebServlet(name = "HelloServlet", urlPatterns = {"/hello"}, loadOnStartup = 1)
 public class HelloServlet extends HttpServlet {
@@ -26,6 +27,7 @@ public class HelloServlet extends HttpServlet {
     LeanEngine.register(AllIMHook.class);
     AVOSCloud.initialize("uu2P5gNTxGhjyaJGAPPnjCtJ-gzGzoHsz", "j5lErUd6q7LhPD8CXhfmA2Rg",
         "atXAmIVlQoBDBLqumMgzXhcY");
+    EngineRequestSign.instance().setUserMasterKey(true);
   }
 
   public void service(HttpServletRequest req, HttpServletResponse res) throws IOException {

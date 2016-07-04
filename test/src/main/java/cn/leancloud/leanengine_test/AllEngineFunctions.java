@@ -44,4 +44,10 @@ public class AllEngineFunctions {
     result.put("list", list);
     return result;
   }
+
+  @EngineFunction("query")
+  public static List<AVUser> query() throws AVException {
+    List<AVUser> result = AVUser.getQuery().find();
+    return result;
+  }
 }
