@@ -1,6 +1,7 @@
 package cn.leancloud;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,7 +18,9 @@ import cn.leancloud.EndpointParser.EndpointInfo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.avos.avoscloud.AVException;
+import com.avos.avoscloud.AVOSServices;
 import com.avos.avoscloud.AVUtils;
+import com.avos.avoscloud.PaasClient;
 import com.avos.avoscloud.internal.InternalConfigurationController;
 import com.avos.avoscloud.internal.impl.EngineAppConfiguration;
 import com.avos.avoscloud.internal.impl.EnginePersistenceImplementation;
@@ -62,6 +65,31 @@ public class LeanEngine extends HttpServlet {
           funcs.put(info.getEndPoint(), info);
         }
       }
+    }
+  }
+
+  public static void setLocalEngineCallEnabled(boolean enabled) {
+    String cloudUrl;
+    if (enabled) {
+      cloudUrl = "http://0.0.0.0:3000";
+    } else {
+      cloudUrl = PaasClient.storageInstance().getBaseUrl();
+    }
+    try {
+      Method setFunctionUrl =
+          PaasClient.class.getDeclaredMethod("setServiceHost", AVOSServices.class, String.class);
+      setFunctionUrl.setAccessible(true);
+      setFunctionUrl.invoke(null, AVOSServices.FUNCTION_SERVICE, cloudUrl);
+    } catch (NoSuchMethodException e) {
+      e.printStackTrace();
+    } catch (SecurityException e) {
+      e.printStackTrace();
+    } catch (IllegalAccessException e) {
+      e.printStackTrace();
+    } catch (IllegalArgumentException e) {
+      e.printStackTrace();
+    } catch (InvocationTargetException e) {
+      e.printStackTrace();
     }
   }
 
