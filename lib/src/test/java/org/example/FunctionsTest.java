@@ -43,5 +43,5 @@ public class FunctionsTest {
     Map<String, Object> parsedParams = (Map<String, Object>) info.parseParams(content);
     assertEquals("shit from Mars", parsedParams.get("content"));
     assertEquals("123", parsedParams.get("fromPeer"));
-  }  
+  }
 }

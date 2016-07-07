@@ -30,6 +30,7 @@ public class HelloServlet extends HttpServlet {
     EngineRequestSign.instance().setUserMasterKey(true);
   }
 
+  @Override
   public void service(HttpServletRequest req, HttpServletResponse res) throws IOException {
     res.setContentType("text/html");
     PrintWriter out = res.getWriter();

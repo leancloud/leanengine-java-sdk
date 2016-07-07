@@ -28,7 +28,7 @@ public class EngineHookHandlerInfo extends EngineHandlerInfo {
     }
     EngineRequestContext.parseMetaData((Map<String, Object>) hookParams.get(paramInfo.getName()));
     AVUtils.copyPropertiesFromMapToAVObject(
-        (Map<String, Object>) hookParams.get(paramInfo.getName()), (AVObject) param);
+        (Map<String, Object>) hookParams.get(paramInfo.getName()), param);
     return param;
   }
 

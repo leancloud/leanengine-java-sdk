@@ -19,7 +19,6 @@ import com.avos.avoscloud.AVObject;
 import com.avos.avoscloud.AVUser;
 import com.avos.avoscloud.AVUtils;
 import com.avos.avoscloud.PaasClient;
-import com.avos.avoscloud.internal.impl.EngineRequestSign;
 
 public class FunctionIntegrationTest extends TestCase {
 

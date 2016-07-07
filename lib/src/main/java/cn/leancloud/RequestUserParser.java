@@ -10,8 +10,10 @@ import com.avos.avoscloud.AVUser;
 import com.avos.avoscloud.AVUtils;
 import com.avos.avoscloud.GenericObjectCallback;
 import com.avos.avoscloud.PaasClient;
+
 /**
  * 用于解析 header 中间传递的请求用户信息
+ * 
  * @author lbt05
  *
  */

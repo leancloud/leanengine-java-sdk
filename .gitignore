@@ -1,3 +1,4 @@
-/target/
-lib/target/*
-test/target/*
+.settings
+.classpath
+target
+.project

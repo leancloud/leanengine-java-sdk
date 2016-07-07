@@ -92,9 +92,9 @@ public class SampleTest {
       return user;
     }
   }
-  
+
   @EngineHook(className = "Review", type = EngineHookType.beforeSave)
   public static AVObject reviewBeforeSaveHookException(AVObject review) throws Exception {
-    throw new AVException(123,"自定义错误信息");
+    throw new AVException(123, "自定义错误信息");
   }
 }

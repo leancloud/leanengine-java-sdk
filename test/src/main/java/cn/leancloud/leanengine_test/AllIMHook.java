@@ -41,7 +41,7 @@ public class AllIMHook {
 
   @IMHook(type = IMHookType.conversationStart)
   public static Map<String, Object> onConversationStart(Map<String, Object> params) {
-    if ("lbt05".equals((String) params.get("initBy"))) {
+    if ("lbt05".equals(params.get("initBy"))) {
       Map<String, Object> result = new HashMap<String, Object>();
       result.put("reject", true);
       result.put("code", 9890);
@@ -61,7 +61,7 @@ public class AllIMHook {
 
   @IMHook(type = IMHookType.conversationAdd)
   public static Map<String, Object> onConversationAdd(Map<String, Object> params) {
-    if ("lbt05".equals((String) params.get("initBy"))) {
+    if ("lbt05".equals(params.get("initBy"))) {
       Map<String, Object> result = new HashMap<String, Object>();
       result.put("reject", true);
       result.put("code", 9891);
@@ -72,7 +72,7 @@ public class AllIMHook {
 
   @IMHook(type = IMHookType.conversationRemove)
   public static Map<String, Object> onConversationRemove(Map<String, Object> params) {
-    if ("lbt05".equals((String) params.get("initBy"))) {
+    if ("lbt05".equals(params.get("initBy"))) {
       Map<String, Object> result = new HashMap<String, Object>();
       result.put("reject", true);
       result.put("code", 9892);
@@ -84,7 +84,7 @@ public class AllIMHook {
   @IMHook(type = IMHookType.conversationUpdate)
   public static Map<String, Object> onConversationUpdate(Map<String, Object> params) {
     Map<String, Object> result = new HashMap<String, Object>();
-    if ("lbt05".equals((String) params.get("initBy"))) {
+    if ("lbt05".equals(params.get("initBy"))) {
       result.put("reject", true);
       result.put("code", 9893);
     } else {

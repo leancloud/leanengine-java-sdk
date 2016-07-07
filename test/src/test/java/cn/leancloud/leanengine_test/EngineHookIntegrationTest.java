@@ -64,7 +64,7 @@ public class EngineHookIntegrationTest extends TestCase {
       u = AVUser.logIn("spamUser", "123123123");
     }
     Map<String, Object> params = new HashMap<String, Object>();
-    params.put("user", (Map<String, Object>) AVUtils.getParsedObject(u, true));
+    params.put("user", AVUtils.getParsedObject(u, true));
 
     try {
       AVCloud.callFunction("_User/onLogin", params);
@@ -85,7 +85,7 @@ public class EngineHookIntegrationTest extends TestCase {
       u = AVUser.logIn("spamUser", "123123123");
     }
     Map<String, Object> params = new HashMap<String, Object>();
-    params.put("user", (Map<String, Object>) AVUtils.getParsedObject(u, true));
+    params.put("user", AVUtils.getParsedObject(u, true));
 
     Object result = AVCloud.callFunction("_User/onVerified", params);
     assertNull(result);

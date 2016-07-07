@@ -4,35 +4,35 @@ public enum EngineHookType {
   /**
    * 在将对象保存到云端数据表之前，可以对数据做一些清理或验证
    */
-  beforeSave("__before_save",true),
+  beforeSave("__before_save", true),
   /**
    * 在数据保存后触发指定操作
    */
-  afterSave("__after_save",false),
+  afterSave("__after_save", false),
   /**
    * 在更新对象之前做一些检查工作
    */
-  beforeUpdate("__before_update",true),
+  beforeUpdate("__before_update", true),
   /**
    * 在更新对象后执行特定的动作
    */
-  afterUpdate("__after_update",false),
+  afterUpdate("__after_update", false),
   /**
    * 在删除一个对象之前做一些检查工作
    */
-  beforeDelete("__before_delete",true),
+  beforeDelete("__before_delete", true),
   /**
    * 在被删一个对象后执行操作
    */
-  afterDelete("__after_delete",false),
+  afterDelete("__after_delete", false),
   /**
    * 当用户通过邮箱或者短信验证时，对该用户执行特定操作
    */
-  onVerified("__on_verified_sms",false),
+  onVerified("__on_verified_sms", false),
   /**
    * 在用户登录之时执行指定操作
    */
-  onLogin("__on_login__User",true);
+  onLogin("__on_login__User", true);
 
   String endPoint;
   boolean isResponseNeed;
