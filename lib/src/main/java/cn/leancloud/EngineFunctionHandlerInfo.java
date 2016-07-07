@@ -18,9 +18,9 @@ public class EngineFunctionHandlerInfo extends EngineHandlerInfo {
     if (methodParameterList.size() == 0) {
       return null;
     } else {
-      Map jsonParams = JSON.parseObject(requestBody, Map.class);
-      Object[] params = new Object[methodParameterList.size()];
       try {
+        Map jsonParams = JSON.parseObject(requestBody, Map.class);
+        Object[] params = new Object[methodParameterList.size()];
         for (int index = 0; index < methodParameterList.size(); index++) {
           Object p = jsonParams.get(methodParameterList.get(index).name);
           if (p == null) {
