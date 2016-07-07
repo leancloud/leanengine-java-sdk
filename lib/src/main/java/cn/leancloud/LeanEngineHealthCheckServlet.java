@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.alibaba.fastjson.JSONObject;
+import com.avos.avoscloud.AVUtils;
 import com.avos.avoscloud.PaasClient;
 
 /**
@@ -17,13 +18,12 @@ import com.avos.avoscloud.PaasClient;
  * @author lbt05
  *
  */
-@WebServlet(name = "LeanEngineServlet", urlPatterns = {"/__engine/1/ping",}, loadOnStartup = 4)
-class LeanEngineHealthCheckServlet extends HttpServlet {
+@WebServlet(name = "LeanEngineHealthServlet", urlPatterns = {"/__engine/1/ping"})
+public class LeanEngineHealthCheckServlet extends HttpServlet {
 
   @Override
-  protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException,
+  protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException,
       IOException {
-    super.doPost(req, resp);
     resp.setHeader("content-type", LeanEngine.JSON_CONTENT_TYPE);
     JSONObject result = new JSONObject();
     result.put("runtime", System.getProperty("java.version"));
