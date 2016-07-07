@@ -67,9 +67,7 @@ public abstract class EngineHandlerInfo {
         methodParameterList.size() == 0 ? handlerMethod.invoke(null)
             : params.getClass().isArray() ? handlerMethod.invoke(null, (Object[]) params)
                 : handlerMethod.invoke(null, params);
-    if (returnValue != null) {
-      returnValue = this.wrapperResponse(returnValue, requestBody, rpcCall);
-    }
+    returnValue = this.wrapperResponse(returnValue, requestBody, rpcCall);
     return returnValue;
   }
 
