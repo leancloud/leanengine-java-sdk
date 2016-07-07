@@ -6,7 +6,7 @@ import java.util.Map;
 
 import com.alibaba.fastjson.JSON;
 
-public class IMHookHandlerInfo extends EngineHandlerInfo {
+class IMHookHandlerInfo extends EngineHandlerInfo {
 
   public IMHookHandlerInfo(String endpoint, Method handlerMethod,
       List<EngineFunctionParamInfo> params, Class returnType) {

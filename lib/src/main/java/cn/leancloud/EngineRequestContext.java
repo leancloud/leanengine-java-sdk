@@ -4,6 +4,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
+/**
+ * 在云代码函数中获取请求相关的额外属性
+ * 
+ * @author lbt05
+ *
+ */
 public class EngineRequestContext {
 
   private static final String UPDATED_KEYS = "_updatedKeys";
@@ -13,6 +20,11 @@ public class EngineRequestContext {
     return localMeta.get();
   }
 
+  /**
+   * 在 beforeUpdate 函数中调用可以查看 avobject 的哪些属性被更新了
+   * 
+   * @return
+   */
   public static List<String> getUpdateKeys() {
     Map<String, Object> meta = getMeta();
     if (meta != null && meta.containsKey(UPDATED_KEYS)) {

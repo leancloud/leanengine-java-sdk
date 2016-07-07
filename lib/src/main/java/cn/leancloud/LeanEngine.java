@@ -40,6 +40,11 @@ public class LeanEngine extends HttpServlet {
         EnginePersistenceImplementation.instance());
   }
 
+  /**
+   * 请在ServletContextListener.contextInitialized中注册所有的云函数定义类
+   * 
+   * @param clazz
+   */
   public static void register(Class<?> clazz) {
     for (Method m : clazz.getDeclaredMethods()) {
       EngineFunction func = m.getAnnotation(EngineFunction.class);
@@ -68,6 +73,11 @@ public class LeanEngine extends HttpServlet {
     }
   }
 
+  /**
+   * 本方法用于本地调试期间，设置为 true 后所有的云函数调用都直接调用本地而非LeanCloud上已经部署的项目
+   * 
+   * @param enabled
+   */
   public static void setLocalEngineCallEnabled(boolean enabled) {
     String cloudUrl;
     if (enabled) {

@@ -13,7 +13,7 @@ import javax.servlet.annotation.WebFilter;
 import com.avos.avoscloud.AVUser;
 
 @WebFilter(filterName = "requestUserAuthFilter", urlPatterns = {"/*"})
-public class RequestUserAuthFilter implements Filter {
+class RequestUserAuthFilter implements Filter {
 
   public void init(FilterConfig filterConfig) throws ServletException {}
 

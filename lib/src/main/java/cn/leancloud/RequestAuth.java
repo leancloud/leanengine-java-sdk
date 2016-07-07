@@ -5,10 +5,9 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.avos.avoscloud.internal.InternalConfigurationController;
 import com.avos.avoscloud.internal.impl.EngineRequestSign;
 
-public class RequestAuth {
+class RequestAuth {
 
   public static final String ATTRIBUTE_KEY = "requestAuth";
   public static final String USER_KEY = "authUser";
@@ -123,6 +122,7 @@ class UnauthException extends Exception {
   }
 
 }
+
 
 class InvalidParameterException extends Exception {
   public void resp(HttpServletResponse resp) throws IOException {

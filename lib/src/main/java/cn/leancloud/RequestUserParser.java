@@ -10,8 +10,12 @@ import com.avos.avoscloud.AVUser;
 import com.avos.avoscloud.AVUtils;
 import com.avos.avoscloud.GenericObjectCallback;
 import com.avos.avoscloud.PaasClient;
-
-public class RequestUserParser {
+/**
+ * 用于解析 header 中间传递的请求用户信息
+ * @author lbt05
+ *
+ */
+class RequestUserParser {
 
   public static void parse(final HttpServletRequest req) {
     if (req.getAttribute(RequestAuth.ATTRIBUTE_KEY) == null) {
