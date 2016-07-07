@@ -161,7 +161,11 @@ public class LeanEngine extends HttpServlet {
           result.put("error", e.getCause() != null ? e.getCause().getMessage() : e.getMessage());
           resp.getWriter().write(result.toJSONString());
         }
-        e.getCause().printStackTrace();
+        if (e.getCause() != null) {
+          e.getCause().printStackTrace();
+        } else {
+          e.printStackTrace();
+        }
       }
     }
   }
