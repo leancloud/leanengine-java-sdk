@@ -52,7 +52,7 @@ class RequestAuth {
   }
 
   private RequestAuth(HttpServletRequest req) {
-    if (req.getContentType().startsWith("text/plain")) {
+    if (req.getContentType() != null && req.getContentType().startsWith("text/plain")) {
       // TODO
     } else {
       appId = getHeaders(req, "x-lc-id", "x-avoscloud-application-id", "x-uluru-application-id");
