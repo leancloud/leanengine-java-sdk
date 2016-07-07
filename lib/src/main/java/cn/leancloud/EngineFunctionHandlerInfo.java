@@ -29,7 +29,7 @@ public class EngineFunctionHandlerInfo extends EngineHandlerInfo {
           }
           params[index] = methodParameterList.get(index).parseParams(JSON.toJSONString(p));
         }
-      } catch (InvalidParameterException e) {
+      } catch (Exception e) {
         if (methodParameterList.size() == 1) {
           // when
           Object param = null;
@@ -43,7 +43,7 @@ public class EngineFunctionHandlerInfo extends EngineHandlerInfo {
             // 如果解析出错了，就认为传递过来的是一个jsonObject可以按照多于1个参数的情况来解析
           }
         } else {
-          throw e;
+          throw new InvalidParameterException();
         }
       }
       return params;
