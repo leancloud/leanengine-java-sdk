@@ -22,12 +22,12 @@ public abstract class EngineHandlerInfo {
   static final String USER = "user";
 
   public EngineHandlerInfo(String endpoint, Method handlerMethod,
-      List<EngineFunctionParamInfo> params, Class returnType) {
+      List<EngineFunctionParamInfo> params, Class<?> returnType) {
     this(endpoint, handlerMethod, params, returnType, null);
   }
 
   public EngineHandlerInfo(String endpoint, Method handlerMethod,
-      List<EngineFunctionParamInfo> params, Class returnType, String hookClass) {
+      List<EngineFunctionParamInfo> params, Class<?> returnType, String hookClass) {
     this.handlerMethod = handlerMethod;
     this.endPoint = endpoint;
     this.methodParameterList = params;
@@ -38,7 +38,7 @@ public abstract class EngineHandlerInfo {
   final Method handlerMethod;
   final String endPoint;
   final List<EngineFunctionParamInfo> methodParameterList;
-  final Class returnType;
+  final Class<?> returnType;
   final String hookClass;
 
   public Method getHandlerMethod() {
@@ -87,7 +87,7 @@ public abstract class EngineHandlerInfo {
         AVUtils.isBlankString(function.value()) ? method.getName() : function.value();
     List<EngineFunctionParamInfo> params = new LinkedList<EngineFunctionParamInfo>();
     Annotation[][] annotationMatrix = method.getParameterAnnotations();
-    Class[] paramTypesArray = method.getParameterTypes();
+    Class<?>[] paramTypesArray = method.getParameterTypes();
     if (annotationMatrix.length != paramTypesArray.length) {
       LogUtil.avlog.e("Parameters not annotated correctly for EngineFunction:" + functionName);
     }
