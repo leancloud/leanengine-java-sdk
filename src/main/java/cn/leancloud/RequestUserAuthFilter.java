@@ -9,6 +9,8 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.annotation.WebFilter;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import com.avos.avoscloud.AVUser;
 
@@ -19,9 +21,19 @@ public class RequestUserAuthFilter implements Filter {
 
   public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
       throws IOException, ServletException {
-    chain.doFilter(request, response);
     AVUser.changeCurrentUser(null, true);
     EngineRequestContext.clean();
+    EngineSessionCookie sessionCookie = LeanEngine.getSessionCookie();
+    if (sessionCookie != null) {
+      if (request instanceof HttpServletRequest) {
+        sessionCookie.parseCookie((HttpServletRequest) request);
+      }
+
+      if (response instanceof HttpServletResponse) {
+        sessionCookie.wrappCookie((HttpServletResponse) response);
+      }
+    }
+    chain.doFilter(request, response);
   }
 
   public void destroy() {

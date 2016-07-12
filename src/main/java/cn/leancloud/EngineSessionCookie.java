@@ -13,23 +13,23 @@ import com.avos.avoscloud.AVException;
 import com.avos.avoscloud.AVUser;
 import com.avos.avoscloud.AVUtils;
 
-public class EngineCookieSession {
+public class EngineSessionCookie {
 
   int maxAge;
   boolean fetchUser;
   String sessionKey;
 
-  public EngineCookieSession(int maxAge, boolean fetchUser) {
+  public EngineSessionCookie(int maxAge, boolean fetchUser) {
     this("avos:sess", maxAge, fetchUser);
   }
 
-  public EngineCookieSession(String sessionKey, int maxAge, boolean fetchUser) {
+  public EngineSessionCookie(String sessionKey, int maxAge, boolean fetchUser) {
     this.maxAge = maxAge;
     this.fetchUser = fetchUser;
     this.sessionKey = sessionKey;
   }
 
-  protected void parseCookie(HttpServletRequest req, HttpServletResponse resp) {
+  protected void parseCookie(HttpServletRequest req) {
     Cookie[] cookies = req.getCookies();
     Cookie sessionCookie = null;
     for (Cookie cookie : cookies) {
@@ -52,7 +52,7 @@ public class EngineCookieSession {
     }
   }
 
-  protected void wrappCookie(HttpServletRequest req, HttpServletResponse resp) {
+  protected void wrappCookie(HttpServletResponse resp) {
     AVUser u = AVUser.getCurrentUser();
     if (u != null) {
       Cookie cookie = new Cookie(sessionKey, encodeUser(u));

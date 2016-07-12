@@ -40,7 +40,7 @@ public class LeanEngine extends HttpServlet {
         EnginePersistenceImplementation.instance());
   }
 
-  private static EngineCookieSession sessionCookie;
+  private static EngineSessionCookie sessionCookie;
 
   /**
    * 请在ServletContextListener.contextInitialized中注册所有的云函数定义类
@@ -75,9 +75,18 @@ public class LeanEngine extends HttpServlet {
     }
   }
 
+  /**
+   * 设置sessionCookie的实例
+   * 
+   * @param sessionCookie
+   */
 
-  public static void addSessionCookie(EngineCookieSession sessionCookie) {
+  public static void addSessionCookie(EngineSessionCookie sessionCookie) {
     LeanEngine.sessionCookie = sessionCookie;
+  }
+
+  protected static EngineSessionCookie getSessionCookie() {
+    return sessionCookie;
   }
 
   /**
@@ -136,18 +145,12 @@ public class LeanEngine extends HttpServlet {
       resp.getWriter().println("{\"code\":\"400\",\"error\":\"Unsupported operation.\"}");
       return;
     } else {
-      if (sessionCookie != null) {
-        sessionCookie.parseCookie(req, resp);
-      }
-
       EngineHandlerInfo handler = funcs.get(internalEndpoint.getInternalEndpoint());
       try {
         Object returnValue = handler.execute(req, internalEndpoint.isRPCcall());
         if (internalEndpoint.isNeedResponse()) {
           String respJSONStr = JSON.toJSONString(returnValue);
-          if (sessionCookie != null) {
-            sessionCookie.wrappCookie(req, resp);
-          }
+
           resp.setContentType(JSON_CONTENT_TYPE);
           resp.getWriter().write(respJSONStr);
         }
