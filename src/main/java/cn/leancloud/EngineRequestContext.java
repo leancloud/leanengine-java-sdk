@@ -50,20 +50,26 @@ public class EngineRequestContext {
   }
 
   protected static void parseMetaData(Map<String, Object> objectProperties) {
+    Map<String, Object> meta = new HashMap<String, Object>();
     if (objectProperties.containsKey(UPDATED_KEYS)) {
-      Map<String, Object> meta = new HashMap<String, Object>();
       Object updateValues = objectProperties.remove(UPDATED_KEYS);
-      Object beforeValues = objectProperties.remove(BEFORE_KEYS);
-      Object afterValues = objectProperties.remove(AFTER_KEYS);
       meta.put(UPDATED_KEYS, updateValues);
-      meta.put(AFTER_KEYS, afterValues);
+    }
+    if (objectProperties.containsKey(BEFORE_KEYS)) {
+      Object beforeValues = objectProperties.remove(BEFORE_KEYS);
       meta.put(BEFORE_KEYS, beforeValues);
-      Map<String, Object> existingMeta = localMeta.get();
-      if (existingMeta != null) {
-        existingMeta.putAll(existingMeta);
-      } else {
-        localMeta.set(meta);
-      }
+    }
+
+    if (objectProperties.containsKey(AFTER_KEYS)) {
+      Object afterValues = objectProperties.remove(AFTER_KEYS);
+      meta.put(AFTER_KEYS, afterValues);
+    }
+
+    Map<String, Object> existingMeta = localMeta.get();
+    if (existingMeta != null) {
+      existingMeta.putAll(meta);
+    } else {
+      localMeta.set(meta);
     }
   }
 
