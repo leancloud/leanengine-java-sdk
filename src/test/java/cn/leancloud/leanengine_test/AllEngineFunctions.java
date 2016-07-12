@@ -13,8 +13,8 @@ import cn.leancloud.EngineFunctionParam;
 
 public class AllEngineFunctions {
   @EngineFunction
-  public static void hello() {
-    System.out.println("hello");
+  public static String hello(@EngineFunctionParam("name") String name) {
+    return "hello " + name;
   }
 
   @EngineFunction("ping")

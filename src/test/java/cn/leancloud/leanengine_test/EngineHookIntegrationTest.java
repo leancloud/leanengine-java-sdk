@@ -1,9 +1,16 @@
 package cn.leancloud.leanengine_test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.servlet.ServletHandler;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.avos.avoscloud.AVCloud;
@@ -12,17 +19,36 @@ import com.avos.avoscloud.AVOSCloud;
 import com.avos.avoscloud.AVObject;
 import com.avos.avoscloud.AVUser;
 import com.avos.avoscloud.AVUtils;
+import com.avos.avoscloud.internal.impl.EngineRequestSign;
 
-import junit.framework.TestCase;
+import cn.leancloud.LeanEngine;
 
-public class EngineHookIntegrationTest extends TestCase {
+public class EngineHookIntegrationTest {
 
-  @Override
-  public void setUp() {
+  private static Server server;
+  private static int port = 3000;
+
+  @BeforeClass
+  public static void setUp() throws Exception {
+    server = new Server(port);
+    ServletHandler handler = new ServletHandler();
+    server.setHandler(handler);
+    handler.addServletWithMapping(LeanEngine.class, "/1.1/functions/*");
+    server.start();
+
+    System.setProperty("LEANCLOUD_APP_PORT", "3000");
     AVOSCloud.initialize("uu2P5gNTxGhjyaJGAPPnjCtJ-gzGzoHsz", "j5lErUd6q7LhPD8CXhfmA2Rg",
         "atXAmIVlQoBDBLqumMgzXhcY");
-    FunctionIntegrationTest.setLocalEngineAddress();
+    LeanEngine.setLocalEngineCallEnabled(true);
+    EngineRequestSign.instance().setUserMasterKey(true);
     AVOSCloud.setDebugLogEnabled(true);
+
+    LeanEngine.register(AllEngineHook.class);
+  }
+
+  @AfterClass
+  public static void teardown() throws Exception {
+    server.stop();
   }
 
   @Test

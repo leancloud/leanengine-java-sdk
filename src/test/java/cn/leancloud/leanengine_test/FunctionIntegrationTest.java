@@ -1,57 +1,64 @@
 package cn.leancloud.leanengine_test;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import junit.framework.TestCase;
-
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.servlet.ServletHandler;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.avos.avoscloud.AVCloud;
 import com.avos.avoscloud.AVException;
 import com.avos.avoscloud.AVOSCloud;
-import com.avos.avoscloud.AVOSServices;
 import com.avos.avoscloud.AVObject;
 import com.avos.avoscloud.AVUser;
 import com.avos.avoscloud.AVUtils;
-import com.avos.avoscloud.PaasClient;
+import com.avos.avoscloud.internal.impl.EngineRequestSign;
 
-public class FunctionIntegrationTest extends TestCase {
+import cn.leancloud.LeanEngine;
 
-  public static void setLocalEngineAddress() {
-    try {
-      Method setFunctionUrl =
-          PaasClient.class.getDeclaredMethod("setServiceHost", AVOSServices.class, String.class);
-      setFunctionUrl.setAccessible(true);
-      setFunctionUrl.invoke(null, AVOSServices.FUNCTION_SERVICE, "http://0.0.0.0:3000");
-    } catch (NoSuchMethodException e) {
-      e.printStackTrace();
-    } catch (SecurityException e) {
-      e.printStackTrace();
-    } catch (IllegalAccessException e) {
-      e.printStackTrace();
-    } catch (IllegalArgumentException e) {
-      e.printStackTrace();
-    } catch (InvocationTargetException e) {
-      e.printStackTrace();
-    }
-  }
+public class FunctionIntegrationTest {
 
-  @Override
-  public void setUp() {
+  private static Server server;
+  private static int port = 3000;
+
+  @BeforeClass
+  public static void setUp() throws Exception {
+    server = new Server(port);
+    ServletHandler handler = new ServletHandler();
+    server.setHandler(handler);
+    handler.addServletWithMapping(LeanEngine.class, "/1.1/functions/*");
+    server.start();
+
+    System.setProperty("LEANCLOUD_APP_PORT", "3000");
     AVOSCloud.initialize("uu2P5gNTxGhjyaJGAPPnjCtJ-gzGzoHsz", "j5lErUd6q7LhPD8CXhfmA2Rg",
         "atXAmIVlQoBDBLqumMgzXhcY");
-    setLocalEngineAddress();
+    LeanEngine.setLocalEngineCallEnabled(true);
+    EngineRequestSign.instance().setUserMasterKey(true);
     AVOSCloud.setDebugLogEnabled(true);
+
+    LeanEngine.register(AllEngineFunctions.class);
+  }
+
+  @AfterClass
+  public static void teardown() throws Exception {
+    server.stop();
   }
 
   @Test
   public void testHello() throws Exception {
-    AVCloud.callFunction("hello", null);
+    Map<String, Object> params = new HashMap<String, Object>();
+    params.put("name", "张三");
+    Object result = AVCloud.callFunction("hello", params);
+    assertEquals("hello 张三", result);
   }
 
   @Test
