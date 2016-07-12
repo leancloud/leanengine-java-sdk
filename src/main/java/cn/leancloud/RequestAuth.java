@@ -72,6 +72,9 @@ class RequestAuth {
       sessionToken =
           getHeaders(req, "x-lc-session", "x-uluru-session-token", "x-avoscloud-session-token");
       sign = getHeaders(req, "x-lc-sign", "x-avoscloud-request-sign");
+
+      // 放在这里只能算是一个side effect
+      EngineRequestContext.setRemoteAddress(getHeaders(req, "x-real-ip", "x-forwarded-for"));
     }
   }
 

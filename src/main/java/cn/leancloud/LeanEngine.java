@@ -40,6 +40,8 @@ public class LeanEngine extends HttpServlet {
         EnginePersistenceImplementation.instance());
   }
 
+  private static EngineCookieSession sessionCookie;
+
   /**
    * 请在ServletContextListener.contextInitialized中注册所有的云函数定义类
    * 
@@ -71,6 +73,11 @@ public class LeanEngine extends HttpServlet {
         }
       }
     }
+  }
+
+
+  public static void addSessionCookie(EngineCookieSession sessionCookie) {
+    LeanEngine.sessionCookie = sessionCookie;
   }
 
   /**
@@ -129,11 +136,18 @@ public class LeanEngine extends HttpServlet {
       resp.getWriter().println("{\"code\":\"400\",\"error\":\"Unsupported operation.\"}");
       return;
     } else {
+      if (sessionCookie != null) {
+        sessionCookie.parseCookie(req, resp);
+      }
+
       EngineHandlerInfo handler = funcs.get(internalEndpoint.getInternalEndpoint());
       try {
         Object returnValue = handler.execute(req, internalEndpoint.isRPCcall());
         if (internalEndpoint.isNeedResponse()) {
           String respJSONStr = JSON.toJSONString(returnValue);
+          if (sessionCookie != null) {
+            sessionCookie.wrappCookie(req, resp);
+          }
           resp.setContentType(JSON_CONTENT_TYPE);
           resp.getWriter().write(respJSONStr);
         }
@@ -199,5 +213,4 @@ public class LeanEngine extends HttpServlet {
   public static int getPort() {
     return new Integer(System.getenv("LEANCLOUD_APP_PORT"));
   }
-
 }

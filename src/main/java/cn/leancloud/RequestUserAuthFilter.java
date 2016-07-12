@@ -21,7 +21,7 @@ public class RequestUserAuthFilter implements Filter {
       throws IOException, ServletException {
     chain.doFilter(request, response);
     AVUser.changeCurrentUser(null, true);
-    EngineRequestContext.setMeta(null);
+    EngineRequestContext.clean();
   }
 
   public void destroy() {

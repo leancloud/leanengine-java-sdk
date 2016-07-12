@@ -14,6 +14,9 @@ import java.util.Map;
 public class EngineRequestContext {
 
   private static final String UPDATED_KEYS = "_updatedKeys";
+  private static final String REMOTE_ADDRESS = "_remoteAddress";
+  private static final String BEFORE_KEYS = "__before";
+  private static final String AFTER_KEYS = "__after";
   static ThreadLocal<Map<String, Object>> localMeta = new ThreadLocal<Map<String, Object>>();
 
   public static Map<String, Object> getMeta() {
@@ -33,16 +36,49 @@ public class EngineRequestContext {
     return null;
   }
 
-  protected static void setMeta(Map<String, Object> meta) {
-    localMeta.set(meta);
+  /**
+   * 获取发起请求的 ip 地址
+   * 
+   * @return
+   */
+  public static String getRemoteAddress() {
+    Map<String, Object> meta = getMeta();
+    if (meta != null && meta.containsKey(UPDATED_KEYS)) {
+      return (String) meta.get(REMOTE_ADDRESS);
+    }
+    return null;
   }
 
   protected static void parseMetaData(Map<String, Object> objectProperties) {
     if (objectProperties.containsKey(UPDATED_KEYS)) {
       Map<String, Object> meta = new HashMap<String, Object>();
-      Object updateKeys = objectProperties.remove(UPDATED_KEYS);
-      meta.put(UPDATED_KEYS, updateKeys);
-      setMeta(meta);
+      Object updateValues = objectProperties.remove(UPDATED_KEYS);
+      Object beforeValues = objectProperties.remove(BEFORE_KEYS);
+      Object afterValues = objectProperties.remove(AFTER_KEYS);
+      meta.put(UPDATED_KEYS, updateValues);
+      meta.put(AFTER_KEYS, afterValues);
+      meta.put(BEFORE_KEYS, beforeValues);
+      Map<String, Object> existingMeta = localMeta.get();
+      if (existingMeta != null) {
+        existingMeta.putAll(existingMeta);
+      } else {
+        localMeta.set(meta);
+      }
     }
+  }
+
+  protected static void setRemoteAddress(String ip) {
+    Map<String, Object> existingMeta = localMeta.get();
+    if (existingMeta != null) {
+      existingMeta.put(REMOTE_ADDRESS, ip);
+    } else {
+      Map<String, Object> meta = new HashMap<String, Object>();
+      meta.put(REMOTE_ADDRESS, ip);
+      localMeta.set(meta);
+    }
+  }
+
+  public static void clean() {
+    localMeta.set(null);
   }
 }
