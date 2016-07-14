@@ -1,6 +1,7 @@
 package org.example;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -12,6 +13,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.avos.avoscloud.AVUser;
 import com.avos.avoscloud.AVUtils;
+
 import cn.leancloud.EngineFunctionParamInfo;
 import cn.leancloud.ResponseUtil;
 
@@ -22,9 +24,8 @@ public class FunctionsTest {
     AVUser user = new AVUser();
     JSONObject results = new JSONObject();
     results.put("result", user);
-    JSONObject filteredResult =
-        JSON.parseObject(ResponseUtil.filterResponse(AVUtils.restfulCloudData(results)),
-            JSONObject.class);
+    JSONObject filteredResult = JSON.parseObject(
+        ResponseUtil.filterResponse(AVUtils.restfulCloudData(results)), JSONObject.class);
 
     assertFalse(filteredResult.getJSONObject("result").containsKey("className"));
   }

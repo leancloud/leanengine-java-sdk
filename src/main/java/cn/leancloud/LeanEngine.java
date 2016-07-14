@@ -211,7 +211,7 @@ public class LeanEngine extends HttpServlet {
   }
 
   public static int getPort() {
-    return new Integer(getEnvOrProperty("LEANCLOUD_APP_PORT"));
+    return Integer.parseInt(getEnvOrProperty("LEANCLOUD_APP_PORT"));
   }
 
   private static String getEnvOrProperty(String key) {
