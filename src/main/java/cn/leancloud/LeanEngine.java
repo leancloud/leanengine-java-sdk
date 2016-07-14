@@ -33,6 +33,7 @@ public class LeanEngine extends HttpServlet {
   public static final String JSON_CONTENT_TYPE = "application/json; charset=UTF-8";
 
   public static final long serialVersionUID = 3962660277165698922L;
+  static boolean httpsRedirectionEnabled = false;
 
   private static Map<String, EngineHandlerInfo> funcs = new HashMap<String, EngineHandlerInfo>();
   static {
@@ -109,6 +110,15 @@ public class LeanEngine extends HttpServlet {
     } catch (Exception e) {
       e.printStackTrace();
     }
+  }
+
+  /**
+   * 设置是否打开 https 自动跳转
+   * 
+   * @param enabled
+   */
+  public static void setHttpsRedirectEnabled(boolean enabled) {
+    httpsRedirectionEnabled = enabled;
   }
 
   @Override
