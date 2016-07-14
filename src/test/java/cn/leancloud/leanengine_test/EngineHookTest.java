@@ -1,5 +1,8 @@
 package cn.leancloud.leanengine_test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -8,21 +11,18 @@ import org.junit.Test;
 
 import com.avos.avoscloud.AVCloud;
 import com.avos.avoscloud.AVException;
-import com.avos.avoscloud.AVOSCloud;
 import com.avos.avoscloud.AVObject;
 import com.avos.avoscloud.AVUser;
 import com.avos.avoscloud.AVUtils;
 
-import junit.framework.TestCase;
+import cn.leancloud.LeanEngine;
 
-public class EngineHookIntegrationTest extends TestCase {
+public class EngineHookTest extends EngineBasicTest {
 
   @Override
-  public void setUp() {
-    AVOSCloud.initialize("uu2P5gNTxGhjyaJGAPPnjCtJ-gzGzoHsz", "j5lErUd6q7LhPD8CXhfmA2Rg",
-        "atXAmIVlQoBDBLqumMgzXhcY");
-    FunctionIntegrationTest.setLocalEngineAddress();
-    AVOSCloud.setDebugLogEnabled(true);
+  public void setUp() throws Exception {
+    super.setUp();
+    LeanEngine.register(AllEngineHook.class);
   }
 
   @Test

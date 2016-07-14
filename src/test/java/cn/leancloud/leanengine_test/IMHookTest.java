@@ -1,24 +1,32 @@
 package cn.leancloud.leanengine_test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import junit.framework.TestCase;
-
+import org.eclipse.jetty.server.Server;
+import org.junit.Before;
 import org.junit.Test;
 
 import com.avos.avoscloud.AVCloud;
 import com.avos.avoscloud.AVException;
-import com.avos.avoscloud.AVOSCloud;
 
-public class IMHookIntegrationTest extends TestCase {
-  @Override
-  public void setUp() {
-    AVOSCloud.initialize("uu2P5gNTxGhjyaJGAPPnjCtJ-gzGzoHsz", "j5lErUd6q7LhPD8CXhfmA2Rg",
-        "atXAmIVlQoBDBLqumMgzXhcY");
-    FunctionIntegrationTest.setLocalEngineAddress();
-    AVOSCloud.setDebugLogEnabled(true);
+import cn.leancloud.LeanEngine;
+
+public class IMHookTest extends EngineBasicTest {
+
+  private static Server server;
+  private static int port = 3000;
+
+  @Before
+  public void setUp() throws Exception {
+    super.setUp();
+    LeanEngine.register(AllIMHook.class);
   }
 
   @Test

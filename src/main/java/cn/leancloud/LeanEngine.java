@@ -12,8 +12,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import cn.leancloud.EndpointParser.EndpointInfo;
-
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.avos.avoscloud.AVException;
@@ -25,9 +23,12 @@ import com.avos.avoscloud.internal.InternalConfigurationController;
 import com.avos.avoscloud.internal.MasterKeyConfiguration;
 import com.avos.avoscloud.internal.impl.EnginePersistenceImplementation;
 
+import cn.leancloud.EndpointParser.EndpointInfo;
 
-@WebServlet(name = "LeanEngineServlet", urlPatterns = {"/1/functions/*", "/1.1/functions/*",
-    "/1/call/*", "/1.1/call/*"}, loadOnStartup = 0)
+
+@WebServlet(name = "LeanEngineServlet",
+    urlPatterns = {"/1/functions/*", "/1.1/functions/*", "/1/call/*", "/1.1/call/*"},
+    loadOnStartup = 0)
 public class LeanEngine extends HttpServlet {
 
   public static final String JSON_CONTENT_TYPE = "application/json; charset=UTF-8";
@@ -37,8 +38,8 @@ public class LeanEngine extends HttpServlet {
 
   private static Map<String, EngineHandlerInfo> funcs = new HashMap<String, EngineHandlerInfo>();
   static {
-    InternalConfigurationController.globalInstance().setInternalPersistence(
-        EnginePersistenceImplementation.instance());
+    InternalConfigurationController.globalInstance()
+        .setInternalPersistence(EnginePersistenceImplementation.instance());
   }
 
   private static EngineSessionCookie sessionCookie;
@@ -127,8 +128,7 @@ public class LeanEngine extends HttpServlet {
     setAllowOriginHeader(req, resp);
     resp.setHeader("Access-Control-Max-Age", "86400");
     resp.setHeader("Access-Control-Allow-Methods", "PUT, GET, POST, DELETE, OPTIONS");
-    resp.setHeader(
-        "Access-Control-Allow-Headers",
+    resp.setHeader("Access-Control-Allow-Headers",
         "X-LC-Id, X-LC-Key, X-LC-Session, X-LC-Sign, X-LC-Prod, X-LC-UA, X-Uluru-Application-Key, X-Uluru-Application-Id, X-Uluru-Application-Production, X-Uluru-Client-Version, X-Uluru-Session-Token, X-AVOSCloud-Application-Key, X-AVOSCloud-Application-Id, X-AVOSCloud-Application-Production, X-AVOSCloud-Client-Version, X-AVOSCloud-Session-Token, X-AVOSCloud-Super-Key, X-Requested-With, Content-Type, X-AVOSCloud-Request-sign");
     resp.setHeader("Content-Length", "0");
     resp.setStatus(HttpServletResponse.SC_OK);
@@ -136,8 +136,8 @@ public class LeanEngine extends HttpServlet {
   }
 
   @Override
-  protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException,
-      IOException {
+  protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+      throws ServletException, IOException {
     setAllowOriginHeader(req, resp);
     try {
       RequestAuth.auth(req);
@@ -220,10 +220,18 @@ public class LeanEngine extends HttpServlet {
   }
 
   public static String getAppEnv() {
-    return System.getenv("LEANCLOUD_APP_ENV");
+    return getEnvOrProperty("LEANCLOUD_APP_ENV");
   }
 
   public static int getPort() {
-    return new Integer(System.getenv("LEANCLOUD_APP_PORT"));
+    return Integer.parseInt(getEnvOrProperty("LEANCLOUD_APP_PORT"));
+  }
+
+  private static String getEnvOrProperty(String key) {
+    String value = System.getenv(key);
+    if (value == null) {
+      value = System.getProperty(key);
+    }
+    return value;
   }
 }

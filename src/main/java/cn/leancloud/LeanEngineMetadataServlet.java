@@ -11,20 +11,16 @@ import javax.servlet.http.HttpServletResponse;
 import com.alibaba.fastjson.JSONObject;
 import com.avos.avoscloud.AVUtils;
 
-@WebServlet(name = "LeanEngineMetadataServlet", urlPatterns = {"/1/functions/_ops/metadatas",
-    "/1.1/functions/_ops/metadatas", "/1/call/_ops/metadatas", "/1.1/call/_ops/metadatas"},
+@WebServlet(name = "LeanEngineMetadataServlet",
+    urlPatterns = {"/1/functions/_ops/metadatas", "/1.1/functions/_ops/metadatas"},
     loadOnStartup = 5)
 public class LeanEngineMetadataServlet extends HttpServlet {
 
+  private static final long serialVersionUID = 171155874009103794L;
 
   @Override
-  public void init() throws ServletException {
-    super.init();
-  }
-
-  @Override
-  protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException,
-      IOException {
+  protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+      throws ServletException, IOException {
     try {
       RequestAuth.auth(req);
       RequestAuth auth = (RequestAuth) req.getAttribute(RequestAuth.ATTRIBUTE_KEY);
