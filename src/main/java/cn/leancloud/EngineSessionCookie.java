@@ -58,6 +58,10 @@ public class EngineSessionCookie {
       Cookie cookie = new Cookie(sessionKey, encodeUser(u));
       cookie.setMaxAge(maxAge);
       resp.addCookie(cookie);
+    } else {
+      Cookie cookie = new Cookie(sessionKey, null);
+      cookie.setMaxAge(0);
+      resp.addCookie(cookie);
     }
   }
 
