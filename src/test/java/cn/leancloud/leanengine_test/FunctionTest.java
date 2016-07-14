@@ -1,57 +1,43 @@
 package cn.leancloud.leanengine_test;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import junit.framework.TestCase;
-
+import org.eclipse.jetty.server.Server;
+import org.junit.Before;
 import org.junit.Test;
 
 import com.avos.avoscloud.AVCloud;
 import com.avos.avoscloud.AVException;
-import com.avos.avoscloud.AVOSCloud;
-import com.avos.avoscloud.AVOSServices;
 import com.avos.avoscloud.AVObject;
 import com.avos.avoscloud.AVUser;
 import com.avos.avoscloud.AVUtils;
-import com.avos.avoscloud.PaasClient;
 
-public class FunctionIntegrationTest extends TestCase {
+import cn.leancloud.LeanEngine;
 
-  public static void setLocalEngineAddress() {
-    try {
-      Method setFunctionUrl =
-          PaasClient.class.getDeclaredMethod("setServiceHost", AVOSServices.class, String.class);
-      setFunctionUrl.setAccessible(true);
-      setFunctionUrl.invoke(null, AVOSServices.FUNCTION_SERVICE, "http://0.0.0.0:3000");
-    } catch (NoSuchMethodException e) {
-      e.printStackTrace();
-    } catch (SecurityException e) {
-      e.printStackTrace();
-    } catch (IllegalAccessException e) {
-      e.printStackTrace();
-    } catch (IllegalArgumentException e) {
-      e.printStackTrace();
-    } catch (InvocationTargetException e) {
-      e.printStackTrace();
-    }
-  }
+public class FunctionTest extends EngineBasicTest {
 
-  @Override
-  public void setUp() {
-    AVOSCloud.initialize("uu2P5gNTxGhjyaJGAPPnjCtJ-gzGzoHsz", "j5lErUd6q7LhPD8CXhfmA2Rg",
-        "atXAmIVlQoBDBLqumMgzXhcY");
-    setLocalEngineAddress();
-    AVOSCloud.setDebugLogEnabled(true);
+  private static Server server;
+  private static int port = 3000;
+
+  @Before
+  public void setUp() throws Exception {
+    super.setUp();
+    LeanEngine.register(AllEngineFunctions.class);
   }
 
   @Test
   public void testHello() throws Exception {
-    AVCloud.callFunction("hello", null);
+    Map<String, Object> params = new HashMap<String, Object>();
+    params.put("name", "张三");
+    Object result = AVCloud.callFunction("hello", params);
+    assertEquals("hello 张三", result);
   }
 
   @Test
