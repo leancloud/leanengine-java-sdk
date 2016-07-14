@@ -64,14 +64,15 @@ public class EngineSessionCookie {
   private static AVUser decodeUser(String cookieValue) {
     String userInfoStr = new String(Base64.decodeFast(cookieValue));
     Map<String, Object> userInfo = JSON.parseObject(userInfoStr, Map.class);
-    AVUser user;
-    try {
-      user = AVUser.createWithoutData(AVUser.class, (String) userInfo.get("objectId"));
-      AVUtils.copyPropertiesFromMapToAVObject(userInfo, user);
-      return user;
-    } catch (AVException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+    if (userInfo.containsKey("objectId") && userInfo.containsValue("sessionToken")) {
+      AVUser user;
+      try {
+        user = AVUser.createWithoutData(AVUser.class, (String) userInfo.get("objectId"));
+        AVUtils.copyPropertiesFromMapToAVObject(userInfo, user);
+        return user;
+      } catch (AVException e) {
+        e.printStackTrace();
+      }
     }
     return null;
   }
