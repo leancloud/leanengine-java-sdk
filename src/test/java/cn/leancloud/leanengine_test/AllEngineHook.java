@@ -34,7 +34,7 @@ public class AllEngineHook {
     }
   }
 
-  @EngineHook(className = "_User", type = EngineHookType.onVerified)
+  @EngineHook(className = "_User", type = EngineHookType.onVerifiedSMS)
   public static void testSMSVerified(AVUser user) throws Exception {
     if (!"576ccfbbd342d30057b6e5af".equals(user.getObjectId())) {
       throw new AVException(400, "wrong user");

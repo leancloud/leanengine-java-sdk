@@ -2,16 +2,16 @@ package cn.leancloud.leanengine_test;
 
 import java.util.List;
 
+import cn.leancloud.EngineHook;
+import cn.leancloud.EngineHookType;
+import cn.leancloud.EngineRequestContext;
+
 import com.avos.avoscloud.AVException;
 import com.avos.avoscloud.AVObject;
 import com.avos.avoscloud.AVQuery;
 import com.avos.avoscloud.AVUser;
 import com.avos.avoscloud.AVUtils;
 import com.avos.avoscloud.LogUtil;
-
-import cn.leancloud.EngineHook;
-import cn.leancloud.EngineHookType;
-import cn.leancloud.EngineRequestContext;
 
 public class SampleTest {
 
@@ -79,12 +79,12 @@ public class SampleTest {
     }
   }
 
-  @EngineHook(className = "_User", type = EngineHookType.onVerified)
+  @EngineHook(className = "_User", type = EngineHookType.onVerifiedSMS)
   public static void userOnVerifiedHook(AVUser user) throws Exception {
     LogUtil.avlog.d("onVerified: sms,user:" + user.getObjectId());
   }
 
-  @EngineHook(className = "_User", type = EngineHookType.onVerified)
+  @EngineHook(className = "_User", type = EngineHookType.onVerifiedSMS)
   public static AVUser userOnLoginHook(AVUser user) throws Exception {
     if ("noLogin".equals(user.getUsername())) {
       throw new Exception("Forbidden");

@@ -9,13 +9,13 @@ import java.util.Map;
 
 import org.junit.Test;
 
+import cn.leancloud.LeanEngine;
+
 import com.avos.avoscloud.AVCloud;
 import com.avos.avoscloud.AVException;
 import com.avos.avoscloud.AVObject;
 import com.avos.avoscloud.AVUser;
 import com.avos.avoscloud.AVUtils;
-
-import cn.leancloud.LeanEngine;
 
 public class EngineHookTest extends EngineBasicTest {
 
@@ -87,7 +87,7 @@ public class EngineHookTest extends EngineBasicTest {
     Map<String, Object> params = new HashMap<String, Object>();
     params.put("user", AVUtils.getParsedObject(u, true));
 
-    Object result = AVCloud.callFunction("_User/onVerified", params);
+    Object result = AVCloud.callFunction("onVerified/sms", params);
     assertNull(result);
   }
 

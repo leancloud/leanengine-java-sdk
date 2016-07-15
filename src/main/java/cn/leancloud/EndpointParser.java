@@ -13,7 +13,8 @@ public class EndpointParser {
       case beforeDelete:
       case afterDelete:
         return type.toString() + "_for_" + className;
-      case onVerified:
+      case onVerifiedSMS:
+      case onVerifiedEmail:
       case onLogin:
         return type.toString();
     }

@@ -105,8 +105,7 @@ public abstract class EngineHandlerInfo {
 
   public static EngineHandlerInfo getEngineHandlerInfo(Method method, EngineHook hook) {
     List<EngineFunctionParamInfo> params = new LinkedList<EngineFunctionParamInfo>();
-    if ("_User".equals(hook.className()) || hook.type() == EngineHookType.onLogin
-        || hook.type() == EngineHookType.onVerified) {
+    if ("_User".equals(hook.className()) || hook.type() == EngineHookType.onLogin) {
       params.add(new EngineFunctionParamInfo(AVUser.class, USER));
     } else {
       params.add(new EngineFunctionParamInfo(AVObject.class, OBJECT));

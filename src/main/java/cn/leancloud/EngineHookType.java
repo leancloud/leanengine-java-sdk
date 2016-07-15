@@ -26,9 +26,14 @@ public enum EngineHookType {
    */
   afterDelete("__after_delete", false),
   /**
-   * 当用户通过邮箱或者短信验证时，对该用户执行特定操作
+   * 当用户通过短信验证时，对该用户执行特定操作
    */
-  onVerified("__on_verified_sms", false),
+  onVerifiedSMS("__on_verified_sms", false),
+  /**
+   * 当用户通过邮箱验证时，对该用户执行特定操作
+   * 
+   */
+  onVerifiedEmail("__on_verified_email", false),
   /**
    * 在用户登录之时执行指定操作
    */
@@ -62,8 +67,10 @@ public enum EngineHookType {
       return afterDelete;
     } else if ("onLogin".equals(string)) {
       return onLogin;
-    } else if ("onVerified".equals(string)) {
-      return onVerified;
+    } else if ("sms".equals(string)) {
+      return onVerifiedSMS;
+    } else if ("email".equals(string)) {
+      return onVerifiedEmail;
     }
     return null;
   }
