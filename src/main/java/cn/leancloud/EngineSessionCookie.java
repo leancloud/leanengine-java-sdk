@@ -38,9 +38,8 @@ public class EngineSessionCookie {
   }
 
   protected void parseCookie(HttpServletRequest req) {
-
     Cookie sessionCookie = getCookie(req, sessionKey);
-    Cookie cookieSign = getCookie(req, sessionKey + ":sig");
+    Cookie cookieSign = getCookie(req, sessionKey + ".sig");
     if (sessionCookie == null
         || cookieSign == null
         || cookieSign.getValue() == null
@@ -92,7 +91,6 @@ public class EngineSessionCookie {
   private static AVUser decodeUser(String cookieValue) {
     String userInfoStr = new String(Base64.getDecoder().decode(cookieValue));
     Map<String, Object> userInfo = JSON.parseObject(userInfoStr, Map.class);
-    System.out.println(userInfo);
     if (userInfo.containsKey(UID) && userInfo.containsKey(SESSION_TOKEN)) {
       AVUser user;
       try {

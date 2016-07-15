@@ -149,7 +149,7 @@ public class FunctionTest extends EngineBasicTest {
     client.setCookieHandler(cookieManager);
     Request.Builder builder = this.getBasicTestRequestBuilder();
     List<String> values =
-        new ArrayList<>(Arrays.asList("avos:sess=" + cookieValue, "avos:sess.sign="
+        new ArrayList<>(Arrays.asList("avos:sess=" + cookieValue, "avos:sess.sig="
             + EngineSessionCookie.getCookieSign("avos:sess", cookieValue, this.secret)));
     Map<String, List<String>> cookies = new HashMap<>();
     cookies.put("Set-Cookie", values);
