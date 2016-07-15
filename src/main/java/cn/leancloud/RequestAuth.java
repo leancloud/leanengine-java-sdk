@@ -5,6 +5,7 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.avos.avoscloud.AVUtils;
 import com.avos.avoscloud.internal.impl.EngineRequestSign;
 
 class RequestAuth {
@@ -74,7 +75,11 @@ class RequestAuth {
       sign = getHeaders(req, "x-lc-sign", "x-avoscloud-request-sign");
 
       // 放在这里只能算是一个side effect
-      EngineRequestContext.setRemoteAddress(getHeaders(req, "x-real-ip", "x-forwarded-for"));
+      String remoteAddress = getHeaders(req, "x-real-ip", "x-forwarded-for");
+      if (AVUtils.isBlankString(remoteAddress)) {
+        remoteAddress = req.getRemoteAddr();
+      }
+      EngineRequestContext.setRemoteAddress(remoteAddress);
     }
   }
 
