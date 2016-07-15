@@ -40,7 +40,15 @@ public class EngineSessionCookie {
   protected void parseCookie(HttpServletRequest req) {
 
     Cookie sessionCookie = getCookie(req, sessionKey);
-
+    Cookie cookieSign = getCookie(req, sessionKey + ":sig");
+    if (sessionCookie == null
+        || cookieSign == null
+        || cookieSign.getValue() == null
+        || sessionCookie.getValue() == null
+        || !cookieSign.getValue().equals(
+            getCookieSign(sessionKey, sessionCookie.getValue(), secret))) {
+      return;
+    }
     if (sessionCookie != null) {
       AVUser user = decodeUser(sessionCookie.getValue());
       if (fetchUser && user != null) {
