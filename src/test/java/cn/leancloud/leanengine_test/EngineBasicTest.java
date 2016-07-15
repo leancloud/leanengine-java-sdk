@@ -34,6 +34,7 @@ public class EngineBasicTest {
     ServletHandler handler = new ServletHandler();
     server.setHandler(handler);
     handler.addServletWithMapping(LeanEngine.class, "/1.1/functions/*");
+    handler.addServletWithMapping(LeanEngine.class, "/1.1/call/*");
     FilterMapping fmap = new FilterMapping();
     handler.addFilterWithMapping(HttpsRequestRedirectFilter.class, "/*",
         EnumSet.of(DispatcherType.INCLUDE, DispatcherType.REQUEST));
