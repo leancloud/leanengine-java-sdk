@@ -56,7 +56,7 @@ public class EngineSessionCookie {
     }
   }
 
-  protected void wrappCookie(HttpServletRequest req, HttpServletResponse resp) {
+  protected void wrappCookie(HttpServletResponse resp) {
     AVUser u = AVUser.getCurrentUser();
     if (u != null) {
       Cookie cookie = new Cookie(sessionKey, encodeUser(u));
