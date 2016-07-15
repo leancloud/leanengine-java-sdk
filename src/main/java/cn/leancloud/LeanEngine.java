@@ -39,6 +39,7 @@ public class LeanEngine extends HttpServlet {
   static {
     InternalConfigurationController.globalInstance().setInternalPersistence(
         EnginePersistenceImplementation.instance());
+    System.setProperty("org.glassfish.web.rfc2109_cookie_names_enforced", "false");
   }
 
   private static EngineSessionCookie sessionCookie;
