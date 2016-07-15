@@ -50,4 +50,9 @@ public class AllEngineFunctions {
     List<AVUser> result = AVUser.getQuery().find();
     return result;
   }
+
+  @EngineFunction("cookieTest")
+  public static AVUser cookieTest() throws AVException {
+    return AVUser.getCurrentUser();
+  }
 }

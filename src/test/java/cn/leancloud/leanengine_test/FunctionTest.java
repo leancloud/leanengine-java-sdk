@@ -4,7 +4,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
+import java.net.CookieManager;
+import java.net.CookiePolicy;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,13 +19,21 @@ import org.eclipse.jetty.server.Server;
 import org.junit.Before;
 import org.junit.Test;
 
+import cn.leancloud.EngineSessionCookie;
+import cn.leancloud.LeanEngine;
+
 import com.avos.avoscloud.AVCloud;
 import com.avos.avoscloud.AVException;
+import com.avos.avoscloud.AVOSCloud;
 import com.avos.avoscloud.AVObject;
 import com.avos.avoscloud.AVUser;
 import com.avos.avoscloud.AVUtils;
-
-import cn.leancloud.LeanEngine;
+import com.avos.avoscloud.okhttp.MediaType;
+import com.avos.avoscloud.okhttp.OkHttpClient;
+import com.avos.avoscloud.okhttp.Request;
+import com.avos.avoscloud.okhttp.RequestBody;
+import com.avos.avoscloud.okhttp.Response;
+import com.avos.avoscloud.okio.BufferedSink;
 
 public class FunctionTest extends EngineBasicTest {
 
@@ -112,5 +126,55 @@ public class FunctionTest extends EngineBasicTest {
     for (AVUser u : userResults) {
       assertNotNull(u.getUsername());
     }
+  }
+
+  @Test
+  public void testCookieUser() throws AVException, URISyntaxException, IOException {
+    AVOSCloud.initialize("uu2P5gNTxGhjyaJGAPPnjCtJ-gzGzoHsz", "j5lErUd6q7LhPD8CXhfmA2Rg",
+        "atXAmIVlQoBDBLqumMgzXhcY");
+    AVUser u = new AVUser();
+    u.setUsername("spamUser");
+    u.setPassword("123123123");
+    try {
+      u.signUp();
+    } catch (AVException e) {
+      u = AVUser.logIn("spamUser", "123123123");
+    }
+    String sessionToken = u.getSessionToken();
+    u.logOut();
+    String cookieValue = EngineSessionCookie.encodeUser(u);
+    OkHttpClient client = new OkHttpClient();
+    CookieManager cookieManager = new CookieManager();
+    cookieManager.setCookiePolicy(CookiePolicy.ACCEPT_ALL);
+    client.setCookieHandler(cookieManager);
+    Request.Builder builder = this.getBasicTestRequestBuilder();
+    List<String> values =
+        new ArrayList<>(Arrays.asList("avos:sess=" + cookieValue, "avos:sess.sign="
+            + EngineSessionCookie.getCookieSign("avos:sess", cookieValue, this.secret)));
+    Map<String, List<String>> cookies = new HashMap<>();
+    cookies.put("Set-Cookie", values);
+    client.getCookieHandler().put(new URI("http://0.0.0.0:3000"), cookies);
+
+    ((CookieManager) client.getCookieHandler()).put(new URI("http://0.0.0.0:3000"), cookies);
+    builder.url("http://0.0.0.0:3000/1.1/call/cookieTest");
+    builder.post(new RequestBody() {
+
+      @Override
+      public void writeTo(BufferedSink sink) throws IOException {
+        // TODO Auto-generated method stub
+
+      }
+
+      @Override
+      public MediaType contentType() {
+        // TODO Auto-generated method stub
+        return null;
+      }
+    });
+    Request request = builder.build();
+    Response response = client.newCall(request).execute();
+    AVUser returnUser =
+        (AVUser) AVCloud.convertCloudResponse((new String(response.body().bytes())));
+    assertEquals(sessionToken, returnUser.getSessionToken());
   }
 }
