@@ -16,6 +16,7 @@ import cn.leancloud.EndpointParser.EndpointInfo;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.avos.avoscloud.AVException;
 import com.avos.avoscloud.AVOSServices;
 import com.avos.avoscloud.AVUtils;
@@ -160,12 +161,11 @@ public class LeanEngine extends HttpServlet {
       try {
         Object returnValue = handler.execute(req, internalEndpoint.isRPCcall());
         if (internalEndpoint.isNeedResponse()) {
-          String respJSONStr = JSON.toJSONString(returnValue);
+          String respJSONStr = JSON.toJSONString(returnValue, SerializerFeature.WriteMapNullValue);
 
           resp.setContentType(JSON_CONTENT_TYPE);
           resp.getWriter().write(respJSONStr);
         }
-
       } catch (IllegalArgumentException e) {
         if (internalEndpoint.isNeedResponse()) {
           InvalidParameterException ex = new InvalidParameterException();
