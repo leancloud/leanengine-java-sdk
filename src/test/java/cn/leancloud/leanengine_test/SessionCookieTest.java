@@ -2,8 +2,6 @@ package cn.leancloud.leanengine_test;
 
 import static org.junit.Assert.assertEquals;
 
-import javax.servlet.http.Cookie;
-
 import org.junit.Test;
 
 import cn.leancloud.EngineSessionCookie;
@@ -18,11 +16,5 @@ public class SessionCookieTest {
     String sign = EngineSessionCookie.signCookie(key, cookie);
     System.out.println(sign);
     assertEquals("t-Hd40ns4tpEY0pWgseuIefTdvg", sign);
-  }
-
-  @Test
-  public void testCookieName() throws Exception {
-    Cookie cookie = new Cookie("avos\\:sess", "value");
-    System.out.println(cookie.getName());
   }
 }

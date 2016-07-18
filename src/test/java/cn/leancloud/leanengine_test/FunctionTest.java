@@ -176,5 +176,27 @@ public class FunctionTest extends EngineBasicTest {
     AVUser returnUser =
         (AVUser) AVCloud.convertCloudResponse((new String(response.body().bytes())));
     assertEquals(sessionToken, returnUser.getSessionToken());
+    // 现在检查没有cookie的情况下，返回空
+    client.setCookieHandler(null);
+    builder = this.getBasicTestRequestBuilder();
+    builder.url("http://0.0.0.0:3000/1.1/call/cookieTest");
+    builder.post(new RequestBody() {
+
+      @Override
+      public void writeTo(BufferedSink sink) throws IOException {
+        // TODO Auto-generated method stub
+
+      }
+
+      @Override
+      public MediaType contentType() {
+        // TODO Auto-generated method stub
+        return null;
+      }
+    });
+    request = builder.build();
+    response = client.newCall(request).execute();
+    String responseStr = new String(response.body().bytes());
+    assertEquals("{\"result\":null}", responseStr);
   }
 }
