@@ -20,17 +20,21 @@ public class HttpsRequestRedirectFilter implements Filter {
   public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
       throws IOException, ServletException {
 
-    if (request instanceof HttpServletRequest && LeanEngine.httpsRedirectionEnabled) {
-      HttpServletRequest req = ((HttpServletRequest) request);
-      String host = req.getHeader("host");
-      String protocol = req.getHeader("x-forwarded-proto");
-      String url = req.getRequestURL().toString();
-      String path = req.getRequestURI();
-      if ("production".equals(LeanEngine.getAppEnv().toLowerCase()) && host != null
-          && host.endsWith("leanapp.cn") && !"https".equals(protocol)) {
-        ((HttpServletResponse) response).sendRedirect("https://" + host + path);
-        return;
+    try {
+      if (request instanceof HttpServletRequest && LeanEngine.httpsRedirectionEnabled) {
+        HttpServletRequest req = ((HttpServletRequest) request);
+        String host = req.getHeader("host");
+        String protocol = req.getHeader("x-forwarded-proto");
+        String url = req.getRequestURL().toString();
+        String path = req.getRequestURI();
+        if ("production".equals(LeanEngine.getAppEnv().toLowerCase()) && host != null
+            && host.endsWith("leanapp.cn") && !"https".equals(protocol)) {
+          ((HttpServletResponse) response).sendRedirect("https://" + host + path);
+          return;
+        }
       }
+    } catch (Exception e) {
+      e.printStackTrace();
     }
     chain.doFilter(request, response);
   }
