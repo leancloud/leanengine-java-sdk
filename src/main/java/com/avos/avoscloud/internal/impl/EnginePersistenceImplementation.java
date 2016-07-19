@@ -1,34 +1,38 @@
 package com.avos.avoscloud.internal.impl;
 
+import cn.leancloud.LeanEngine;
+
 import com.avos.avoscloud.AVUser;
-import com.avos.avoscloud.internal.impl.SimplePersistence;
 
 public class EnginePersistenceImplementation extends SimplePersistence {
 
-    protected EnginePersistenceImplementation() {
+  protected EnginePersistenceImplementation() {
 
+  }
+
+  public static EnginePersistenceImplementation instance() {
+    synchronized (EnginePersistenceImplementation.class) {
+      if (instance == null) {
+        instance = new EnginePersistenceImplementation();
+      }
     }
+    return instance;
+  }
 
-    public static EnginePersistenceImplementation instance() {
-        synchronized (EnginePersistenceImplementation.class) {
-            if (instance == null) {
-                instance = new EnginePersistenceImplementation();
-            }
-        }
-        return instance;
+  private static EnginePersistenceImplementation instance;
+  private ThreadLocal<AVUser> currentUser = new ThreadLocal<AVUser>();
+
+  @Override
+  public void setCurrentUser(AVUser user, boolean clean) {
+    currentUser.set(user);
+    if (LeanEngine.getSessionCookie() != null) {
+      LeanEngine.getSessionCookie().wrappCookie(clean);
     }
+  }
 
-    private static EnginePersistenceImplementation instance;
-    private ThreadLocal<AVUser> currentUser = new ThreadLocal<AVUser>();
-
-    @Override
-    public void setCurrentUser(AVUser user, boolean clean) {
-        currentUser.set(user);
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T extends AVUser> T getCurrentUser(Class<T> userClass) {
-        return (T) currentUser.get();
-    }
+  @SuppressWarnings("unchecked")
+  @Override
+  public <T extends AVUser> T getCurrentUser(Class<T> userClass) {
+    return (T) currentUser.get();
+  }
 }
