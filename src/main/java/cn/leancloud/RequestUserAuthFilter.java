@@ -21,17 +21,16 @@ public class RequestUserAuthFilter implements Filter {
 
   public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
       throws IOException, ServletException {
-    AVUser.changeCurrentUser(null, true);
-    EngineRequestContext.clean();
-    EngineSessionCookie sessionCookie = LeanEngine.getSessionCookie();
-    if (sessionCookie != null) {
-      if (request instanceof HttpServletRequest) {
-        sessionCookie.parseCookie((HttpServletRequest) request);
+    try {
+      AVUser.changeCurrentUser(null, false);
+      EngineRequestContext.clean();
+      EngineSessionCookie sessionCookie = LeanEngine.getSessionCookie();
+      if (sessionCookie != null && request instanceof HttpServletRequest
+          && response instanceof HttpServletResponse) {
+        sessionCookie.parseCookie((HttpServletRequest) request, (HttpServletResponse) response);
       }
-
-      if (response instanceof HttpServletResponse) {
-        sessionCookie.wrappCookie((HttpServletResponse) response);
-      }
+    } catch (Exception e) {
+      e.printStackTrace();
     }
     chain.doFilter(request, response);
   }
