@@ -25,6 +25,7 @@ public class EngineSessionCookie {
   boolean fetchUser;
   String sessionKey;
   String secret;
+  ThreadLocal<HttpServletResponse> responseHolder = new ThreadLocal<>();
 
   public EngineSessionCookie(String secret, int maxAge, boolean fetchUser) {
     this(secret, "avos:sess", maxAge, fetchUser);
@@ -37,7 +38,8 @@ public class EngineSessionCookie {
     this.secret = secret;
   }
 
-  protected void parseCookie(HttpServletRequest req) {
+  protected void parseCookie(HttpServletRequest req, HttpServletResponse response) {
+    this.responseHolder.set(response);
     Cookie sessionCookie = getCookie(req, sessionKey);
     Cookie cookieSign = getCookie(req, sessionKey + ".sig");
     if (sessionCookie == null
@@ -63,23 +65,30 @@ public class EngineSessionCookie {
     }
   }
 
-  protected void wrappCookie(HttpServletResponse resp) {
-    AVUser u = AVUser.getCurrentUser();
-    if (u != null) {
-      Cookie cookie = new Cookie(sessionKey, encodeUser(u));
-      cookie.setMaxAge(maxAge);
-      Cookie signCookie =
-          new Cookie(sessionKey + ".sig", getCookieSign(sessionKey, cookie.getValue(), secret));
-      signCookie.setMaxAge(maxAge);
-      resp.addCookie(cookie);
-      resp.addCookie(signCookie);
+  public void wrappCookie(boolean inResponse) {
+    if (inResponse) {
+      HttpServletResponse resp = responseHolder.get();
+      if (resp != null) {
+        AVUser u = AVUser.getCurrentUser();
+        if (u != null) {
+          Cookie cookie = new Cookie(sessionKey, encodeUser(u));
+          cookie.setMaxAge(maxAge);
+          Cookie signCookie =
+              new Cookie(sessionKey + ".sig", getCookieSign(sessionKey, cookie.getValue(), secret));
+          signCookie.setMaxAge(maxAge);
+          resp.addCookie(cookie);
+          resp.addCookie(signCookie);
+        } else {
+          Cookie cookie = new Cookie(sessionKey, null);
+          Cookie signCookie = new Cookie(sessionKey + ".sig", null);
+          cookie.setMaxAge(0);
+          signCookie.setMaxAge(0);
+          resp.addCookie(cookie);
+          resp.addCookie(signCookie);
+        }
+      }
     } else {
-      Cookie cookie = new Cookie(sessionKey, null);
-      Cookie signCookie = new Cookie(sessionKey + ".sig", null);
-      cookie.setMaxAge(0);
-      signCookie.setMaxAge(0);
-      resp.addCookie(cookie);
-      resp.addCookie(signCookie);
+      responseHolder.set(null);
     }
   }
 
