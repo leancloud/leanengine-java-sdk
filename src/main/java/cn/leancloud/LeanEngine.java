@@ -88,7 +88,7 @@ public class LeanEngine extends HttpServlet {
     LeanEngine.sessionCookie = sessionCookie;
   }
 
-  protected static EngineSessionCookie getSessionCookie() {
+  public static EngineSessionCookie getSessionCookie() {
     return sessionCookie;
   }
 
@@ -162,7 +162,6 @@ public class LeanEngine extends HttpServlet {
         Object returnValue = handler.execute(req, internalEndpoint.isRPCcall());
         if (internalEndpoint.isNeedResponse()) {
           String respJSONStr = JSON.toJSONString(returnValue, SerializerFeature.WriteMapNullValue);
-
           resp.setContentType(JSON_CONTENT_TYPE);
           resp.getWriter().write(respJSONStr);
         }
