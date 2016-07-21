@@ -26,6 +26,9 @@ public class EngineSessionCookie {
   String sessionKey;
   String secret;
   ThreadLocal<HttpServletResponse> responseHolder = new ThreadLocal<>();
+  static {
+    System.setProperty("org.glassfish.web.rfc2109_cookie_names_enforced", "false");
+  }
 
   public EngineSessionCookie(String secret, int maxAge, boolean fetchUser) {
     this(secret, "avos:sess", maxAge, fetchUser);
