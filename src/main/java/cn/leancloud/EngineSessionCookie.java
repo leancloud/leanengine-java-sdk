@@ -1,5 +1,6 @@
 package cn.leancloud;
 
+import java.net.URL;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
@@ -26,6 +27,7 @@ public class EngineSessionCookie {
   String sessionKey;
   String secret;
   ThreadLocal<HttpServletResponse> responseHolder = new ThreadLocal<>();
+  ThreadLocal<HttpServletRequest> requestHolder = new ThreadLocal<>();
   static {
     System.setProperty("org.glassfish.web.rfc2109_cookie_names_enforced", "false");
   }
@@ -43,6 +45,7 @@ public class EngineSessionCookie {
 
   protected void parseCookie(HttpServletRequest req, HttpServletResponse response) {
     this.responseHolder.set(response);
+    this.requestHolder.set(req);
     Cookie sessionCookie = getCookie(req, sessionKey);
     Cookie cookieSign = getCookie(req, sessionKey + ".sig");
     if (sessionCookie == null
@@ -71,6 +74,7 @@ public class EngineSessionCookie {
   public void wrappCookie(boolean inResponse) {
     if (inResponse) {
       HttpServletResponse resp = responseHolder.get();
+      HttpServletRequest req = requestHolder.get();
       if (resp != null) {
         AVUser u = AVUser.getCurrentUser();
         if (u != null) {
@@ -79,6 +83,14 @@ public class EngineSessionCookie {
           Cookie signCookie =
               new Cookie(sessionKey + ".sig", getCookieSign(sessionKey, cookie.getValue(), secret));
           signCookie.setMaxAge(maxAge);
+          try {
+            URL requestURL = new URL(req.getRequestURL().toString());
+            cookie.setDomain(requestURL.getHost());
+            signCookie.setDomain(requestURL.getHost());
+          } catch (Exception e) {
+          }
+          cookie.setPath("/");
+          signCookie.setPath("/");
           resp.addCookie(cookie);
           resp.addCookie(signCookie);
         } else {
@@ -110,7 +122,6 @@ public class EngineSessionCookie {
         Map<String, Object> value = new HashMap<String, Object>();
         value.put(AVUser.SESSION_TOKEN_KEY, userInfo.get(SESSION_TOKEN));
         AVUtils.copyPropertiesFromMapToAVObject(value, user);
-        System.out.println(user + "SHITSHIT");
         return user;
       } catch (AVException e) {
         e.printStackTrace();
