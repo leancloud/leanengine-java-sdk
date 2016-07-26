@@ -58,7 +58,7 @@ public class EngineSessionCookie {
     }
     if (sessionCookie != null) {
       AVUser user = decodeUser(sessionCookie.getValue());
-      if (fetchUser && user != null) {
+      if (fetchUser && user != null && !user.isDataAvailable()) {
         try {
           user.fetch();
         } catch (AVException e) {
@@ -77,29 +77,41 @@ public class EngineSessionCookie {
       HttpServletRequest req = requestHolder.get();
       if (resp != null) {
         AVUser u = AVUser.getCurrentUser();
+        String host = null;
+        try {
+          URL requestURL = new URL(req.getRequestURL().toString());
+          host = requestURL.getHost();
+        } catch (Exception e) {
+        }
         if (u != null) {
           Cookie cookie = new Cookie(sessionKey, encodeUser(u));
           cookie.setMaxAge(maxAge);
+          cookie.setVersion(1);
           Cookie signCookie =
               new Cookie(sessionKey + ".sig", getCookieSign(sessionKey, cookie.getValue(), secret));
+          signCookie.setVersion(1);
           signCookie.setMaxAge(maxAge);
-          try {
-            URL requestURL = new URL(req.getRequestURL().toString());
-            cookie.setDomain(requestURL.getHost());
-            signCookie.setDomain(requestURL.getHost());
-          } catch (Exception e) {
-          }
           cookie.setPath("/");
           signCookie.setPath("/");
-          resp.addCookie(cookie);
-          resp.addCookie(signCookie);
+          if (AVUtils.isBlankString(host)) {
+            cookie.setDomain(host);
+            signCookie.setDomain(host);
+          }
+          addCookie(req, resp, cookie);
+          addCookie(req, resp, signCookie);
         } else {
           Cookie cookie = new Cookie(sessionKey, null);
           Cookie signCookie = new Cookie(sessionKey + ".sig", null);
           cookie.setMaxAge(0);
           signCookie.setMaxAge(0);
-          resp.addCookie(cookie);
-          resp.addCookie(signCookie);
+          cookie.setPath("/");
+          signCookie.setPath("/");
+          if (AVUtils.isBlankString(host)) {
+            cookie.setDomain(host);
+            signCookie.setDomain(host);
+          }
+          addCookie(req, resp, cookie);
+          addCookie(req, resp, signCookie);
         }
       }
     } else {
@@ -167,5 +179,26 @@ public class EngineSessionCookie {
       e.printStackTrace();
     }
     return null;
+  }
+
+  public static void addCookie(HttpServletRequest request, HttpServletResponse response,
+      Cookie cookie) {
+    Cookie[] cookies = request.getCookies();
+    boolean contains = false;
+    if (cookies != null && cookies.length > 0) {
+      for (Cookie existingCookie : cookies) {
+        if (cookie.getName().equals(existingCookie.getName())) {
+          String cookieValue = cookie.getValue();
+          if (cookieValue == null) {
+            contains = existingCookie.getValue() == null;
+          } else {
+            contains = cookieValue.equals(existingCookie.getValue());
+          }
+        }
+      }
+    }
+    if (!contains) {
+      response.addCookie(cookie);
+    }
   }
 }
