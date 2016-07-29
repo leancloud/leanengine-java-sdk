@@ -15,11 +15,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.Cookie;
+
 import org.eclipse.jetty.server.Server;
 import org.junit.Before;
 import org.junit.Test;
 
-import cn.leancloud.EngineSessionCookie;
 import cn.leancloud.LeanEngine;
 
 import com.avos.avoscloud.AVCloud;
@@ -28,6 +29,7 @@ import com.avos.avoscloud.AVOSCloud;
 import com.avos.avoscloud.AVObject;
 import com.avos.avoscloud.AVUser;
 import com.avos.avoscloud.AVUtils;
+import com.avos.avoscloud.internal.impl.DefaultAVUserCookieSign;
 import com.avos.avoscloud.okhttp.MediaType;
 import com.avos.avoscloud.okhttp.OkHttpClient;
 import com.avos.avoscloud.okhttp.Request;
@@ -142,15 +144,17 @@ public class FunctionTest extends EngineBasicTest {
     }
     String sessionToken = u.getSessionToken();
     u.logOut();
-    String cookieValue = EngineSessionCookie.encodeUser(u);
+    DefaultAVUserCookieSign sign = new DefaultAVUserCookieSign(secret, 3000);
+    Cookie userCookie = sign.encodeUser(u);
+    Cookie cookieSign = sign.getCookieSign(u);
     OkHttpClient client = new OkHttpClient();
     CookieManager cookieManager = new CookieManager();
     cookieManager.setCookiePolicy(CookiePolicy.ACCEPT_ALL);
     client.setCookieHandler(cookieManager);
     Request.Builder builder = this.getBasicTestRequestBuilder();
     List<String> values =
-        new ArrayList<>(Arrays.asList("avos:sess=" + cookieValue, "avos:sess.sig="
-            + EngineSessionCookie.getCookieSign("avos:sess", cookieValue, this.secret)));
+        new ArrayList<>(Arrays.asList("avos:sess=" + userCookie.getValue(), "avos:sess.sig="
+            + cookieSign.getValue()));
     Map<String, List<String>> cookies = new HashMap<>();
     cookies.put("Set-Cookie", values);
     client.getCookieHandler().put(new URI("http://0.0.0.0:3000"), cookies);
@@ -161,13 +165,11 @@ public class FunctionTest extends EngineBasicTest {
 
       @Override
       public void writeTo(BufferedSink sink) throws IOException {
-        // TODO Auto-generated method stub
 
       }
 
       @Override
       public MediaType contentType() {
-        // TODO Auto-generated method stub
         return null;
       }
     });
@@ -184,13 +186,11 @@ public class FunctionTest extends EngineBasicTest {
 
       @Override
       public void writeTo(BufferedSink sink) throws IOException {
-        // TODO Auto-generated method stub
 
       }
 
       @Override
       public MediaType contentType() {
-        // TODO Auto-generated method stub
         return null;
       }
     });
