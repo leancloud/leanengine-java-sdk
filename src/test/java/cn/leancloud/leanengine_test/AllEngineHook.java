@@ -2,28 +2,16 @@ package cn.leancloud.leanengine_test;
 
 import java.util.List;
 
-import cn.leancloud.EngineHook;
-import cn.leancloud.EngineHookType;
-import cn.leancloud.EngineRequestContext;
-
 import com.avos.avoscloud.AVException;
 import com.avos.avoscloud.AVObject;
 import com.avos.avoscloud.AVUser;
 import com.avos.avoscloud.AVUtils;
 
-public class AllEngineHook {
+import cn.leancloud.EngineHook;
+import cn.leancloud.EngineHookType;
+import cn.leancloud.EngineRequestContext;
 
-  @EngineHook(className = "hello", type = EngineHookType.beforeSave)
-  public static AVObject beforeSave(AVObject obj) throws Exception {
-    if (obj.getInt("star") <= 50) {
-      if (obj.getInt("star") > 30) {
-        obj.put("star", 30);
-      }
-      return obj;
-    } else {
-      throw new AVException(400, "star should less than 50");
-    }
-  }
+public class AllEngineHook {
 
   @EngineHook(className = "_User", type = EngineHookType.onLogin)
   public static void testOnLogin(AVUser user) throws Exception {
@@ -38,6 +26,19 @@ public class AllEngineHook {
   public static void testSMSVerified(AVUser user) throws Exception {
     if (!"576ccfbbd342d30057b6e5af".equals(user.getObjectId())) {
       throw new AVException(400, "wrong user");
+    }
+  }
+
+  @EngineHook(className = "TestReview", type = EngineHookType.beforeSave)
+  public static AVObject beforeSave(AVObject obj) throws Exception {
+    if (obj.getInt("star") <= 50) {
+      if (obj.getInt("star") > 30) {
+        obj.put("star", 30);
+      }
+      return obj;
+    } else {
+      // TODO 不建议让用户设置 400 这样的响应码，希望能隐藏 http 的细节。
+      throw new AVException(400, "star should less than 50");
     }
   }
 

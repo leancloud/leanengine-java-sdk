@@ -9,14 +9,14 @@ import org.eclipse.jetty.servlet.ServletHandler;
 import org.junit.After;
 import org.junit.Before;
 
+import com.avos.avoscloud.AVOSCloud;
+import com.avos.avoscloud.internal.impl.EngineRequestSign;
+import com.avos.avoscloud.okhttp.Request;
+
 import cn.leancloud.EngineSessionCookie;
 import cn.leancloud.HttpsRequestRedirectFilter;
 import cn.leancloud.LeanEngine;
 import cn.leancloud.RequestUserAuthFilter;
-
-import com.avos.avoscloud.AVOSCloud;
-import com.avos.avoscloud.internal.impl.EngineRequestSign;
-import com.avos.avoscloud.okhttp.Request;
 
 public class EngineBasicTest {
 
@@ -56,11 +56,27 @@ public class EngineBasicTest {
 
   public Request.Builder getBasicTestRequestBuilder() {
     Request.Builder builder = new Request.Builder();
-    builder.addHeader("X-LC-Id", "uu2P5gNTxGhjyaJGAPPnjCtJ-gzGzoHsz");
-    builder.addHeader("X-LC-Key", "j5lErUd6q7LhPD8CXhfmA2Rg");
-    builder.addHeader("x-uluru-master-key", "atXAmIVlQoBDBLqumMgzXhcY");
-    builder.addHeader("Content-Type", "application/json");
+    builder.addHeader("X-LC-Id", getAppId());
+    builder.addHeader("X-LC-Key", getAppKey());
+    builder.addHeader("x-uluru-master-key", getMasterKey());
+    builder.addHeader("Content-Type", getContentType());
     return builder;
+  }
+
+  protected String getAppId() {
+    return "uu2P5gNTxGhjyaJGAPPnjCtJ-gzGzoHsz";
+  }
+
+  protected String getAppKey() {
+    return "j5lErUd6q7LhPD8CXhfmA2Rg";
+  }
+
+  protected String getMasterKey() {
+    return "atXAmIVlQoBDBLqumMgzXhcY";
+  }
+
+  protected String getContentType() {
+    return "application/json";
   }
 
 }
