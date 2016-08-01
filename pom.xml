@@ -61,9 +61,15 @@
 			<version>${jettyVersion}</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-client</artifactId>
+			<version>${jettyVersion}</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 	<build>
-		<plugins>			
+		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
