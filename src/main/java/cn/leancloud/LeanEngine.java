@@ -12,6 +12,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.eclipse.jetty.server.Response;
+
 import cn.leancloud.EndpointParser.EndpointInfo;
 
 import com.alibaba.fastjson.JSON;
@@ -168,7 +170,6 @@ public class LeanEngine extends HttpServlet {
         if (internalEndpoint.isNeedResponse()) {
           InvalidParameterException ex = new InvalidParameterException();
           ex.resp(resp);
-          ex.printStackTrace();
         }
       } catch (Exception e) {
         if (internalEndpoint.isNeedResponse()) {
@@ -177,12 +178,8 @@ public class LeanEngine extends HttpServlet {
           result.put("code",
               e.getCause() instanceof AVException ? ((AVException) e.getCause()).getCode() : 1);
           result.put("error", e.getCause() != null ? e.getCause().getMessage() : e.getMessage());
+          resp.setStatus(Response.SC_BAD_REQUEST);
           resp.getWriter().write(result.toJSONString());
-        }
-        if (e.getCause() != null) {
-          e.getCause().printStackTrace();
-        } else {
-          e.printStackTrace();
         }
       }
     }

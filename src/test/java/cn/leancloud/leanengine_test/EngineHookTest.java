@@ -7,6 +7,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.junit.Test;
 
 import cn.leancloud.LeanEngine;
@@ -16,6 +18,11 @@ import com.avos.avoscloud.AVException;
 import com.avos.avoscloud.AVObject;
 import com.avos.avoscloud.AVUser;
 import com.avos.avoscloud.AVUtils;
+import com.avos.avoscloud.okhttp.MediaType;
+import com.avos.avoscloud.okhttp.OkHttpClient;
+import com.avos.avoscloud.okhttp.Request;
+import com.avos.avoscloud.okhttp.RequestBody;
+import com.avos.avoscloud.okhttp.Response;
 
 public class EngineHookTest extends EngineBasicTest {
 
@@ -51,6 +58,19 @@ public class EngineHookTest extends EngineBasicTest {
     } catch (AVException e) {
       assertEquals(400, e.getCode());
     }
+  }
+
+  @Test
+  public void testHookWithErrorResponseStatus() throws Exception {
+    String content = "{\"object\":{\"star\":100}}";
+    OkHttpClient client = new OkHttpClient();
+    Request.Builder builder = this.getBasicTestRequestBuilder();
+    builder.url("http://localhost:3000/1.1/functions/hello/beforeSave");
+    builder.post(RequestBody.create(MediaType.parse(getContentType()), content));
+    Response response = client.newCall(builder.build()).execute();
+    assertEquals(HttpServletResponse.SC_BAD_REQUEST, response.code());
+    assertEquals("{\"code\":400,\"error\":\"star should less than 50\"}", new String(response
+        .body().bytes()));
   }
 
   @Test
