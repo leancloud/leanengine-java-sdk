@@ -86,7 +86,7 @@ public class DefaultAVUserCookieSign implements AVUserCookieSign {
       String cookieValue = getUserCookieValue(user);
       String text = sessionKey + "=" + cookieValue;
       try {
-        cookie.setValue(encrypt(text));
+        cookie.setValue(encrypt(secret, text));
         cookie.setMaxAge(maxAge);
       } catch (NoSuchAlgorithmException e) {
         e.printStackTrace();
@@ -106,7 +106,7 @@ public class DefaultAVUserCookieSign implements AVUserCookieSign {
     if (userCookie != null && cookieSign != null && cookieSign.getValue() != null
         && userCookie.getValue() != null) {
       try {
-        String encryptedCookieValue = encrypt(sessionKey + "=" + userCookie.getValue());
+        String encryptedCookieValue = encrypt(secret, sessionKey + "=" + userCookie.getValue());
         return cookieSign.getValue().equals(encryptedCookieValue);
       } catch (Exception e) {
 
@@ -115,7 +115,8 @@ public class DefaultAVUserCookieSign implements AVUserCookieSign {
     return false;
   }
 
-  private String encrypt(String text) throws NoSuchAlgorithmException, InvalidKeyException {
+  public static String encrypt(String secret, String text) throws NoSuchAlgorithmException,
+      InvalidKeyException {
     SecretKeySpec signingKey = new SecretKeySpec(secret.getBytes(), HMAC_SHA1_ALGORITHM);
     Mac mac = Mac.getInstance(HMAC_SHA1_ALGORITHM);
     mac.init(signingKey);
