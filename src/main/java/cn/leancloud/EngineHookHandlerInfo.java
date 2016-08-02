@@ -1,6 +1,7 @@
 package cn.leancloud;
 
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -34,12 +35,12 @@ public class EngineHookHandlerInfo extends EngineHandlerInfo {
 
   @Override
   public Object wrapperResponse(Object result, String requestBody, boolean rpcCall) {
-    Map<String, Object> hookParams = JSON.parseObject(requestBody, Map.class);
+    Map<String, Object> hookParams = new HashMap<String, Object>();
     Map<String, Object> objectMapping =
         (Map<String, Object>) AVUtils.getParsedObject(result, true, true);
     objectMapping.remove("__type");
     objectMapping.remove("className");
-    hookParams.put(methodParameterList.get(0).name, objectMapping);
+    hookParams.putAll(objectMapping);
     return hookParams;
   }
 }

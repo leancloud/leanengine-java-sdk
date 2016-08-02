@@ -34,30 +34,14 @@ public class EngineHookTest extends EngineBasicTest {
 
   @Test
   public void testHook() throws Exception {
-    AVObject object = new AVObject("hello");
-    Map<String, Object> restData = (Map<String, Object>) AVUtils.getParsedObject(object, true);
-    restData.put("star", 1);
-    Map<String, Object> p = new HashMap<String, Object>();
-    p.put("object", restData);
-    Map<String, Object> result = AVCloud.callFunction("hello/beforeSave", p);
-    // assertEquals(1, result.get("star"));
-    restData.put("star", 40);
-    result = AVCloud.callFunction("hello/beforeSave", p);
-    // assertEquals(1, result.get("star"));
-  }
-
-  @Test
-  public void testHookWithError() throws Exception {
-    AVObject object = new AVObject("hello");
-    Map<String, Object> restData = (Map<String, Object>) AVUtils.getParsedObject(object, true);
-    restData.put("star", 500);
-    Map<String, Object> p = new HashMap<String, Object>();
-    p.put("object", restData);
-    try {
-      AVCloud.callFunction("hello/beforeSave", p);
-    } catch (AVException e) {
-      assertEquals(400, e.getCode());
-    }
+    String content = "{\"object\":{\"star\":35}}";
+    OkHttpClient client = new OkHttpClient();
+    Request.Builder builder = this.getBasicTestRequestBuilder();
+    builder.url("http://localhost:3000/1.1/functions/hello/beforeSave");
+    builder.post(RequestBody.create(MediaType.parse(getContentType()), content));
+    Response response = client.newCall(builder.build()).execute();
+    assertEquals(HttpServletResponse.SC_OK, response.code());
+    assertEquals("{\"star\":30}", new String(response.body().bytes()));
   }
 
   @Test
