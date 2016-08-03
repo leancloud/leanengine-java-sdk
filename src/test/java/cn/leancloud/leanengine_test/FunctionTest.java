@@ -16,12 +16,11 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jetty.server.Server;
 import org.junit.Before;
 import org.junit.Test;
-
-import cn.leancloud.LeanEngine;
 
 import com.avos.avoscloud.AVCloud;
 import com.avos.avoscloud.AVException;
@@ -37,6 +36,8 @@ import com.avos.avoscloud.okhttp.RequestBody;
 import com.avos.avoscloud.okhttp.Response;
 import com.avos.avoscloud.okio.BufferedSink;
 
+import cn.leancloud.LeanEngine;
+
 public class FunctionTest extends EngineBasicTest {
 
   private static Server server;
@@ -46,6 +47,18 @@ public class FunctionTest extends EngineBasicTest {
   public void setUp() throws Exception {
     super.setUp();
     LeanEngine.register(AllEngineFunctions.class);
+  }
+
+  @Test
+  public void test_ping() throws IOException {
+    Request.Builder builder = new Request.Builder();
+    builder.url("http://localhost:3000/__engine/1/ping");
+    builder.get();
+    Response response = client.newCall(builder.build()).execute();
+    assertEquals(HttpServletResponse.SC_OK, response.code());
+    String body = new String(response.body().bytes());
+    assertTrue(body.indexOf("runtime") > 0);
+    assertTrue(body.indexOf("version") > 0);
   }
 
   @Test
@@ -152,9 +165,8 @@ public class FunctionTest extends EngineBasicTest {
     cookieManager.setCookiePolicy(CookiePolicy.ACCEPT_ALL);
     client.setCookieHandler(cookieManager);
     Request.Builder builder = this.getBasicTestRequestBuilder();
-    List<String> values =
-        new ArrayList<>(Arrays.asList("avos:sess=" + userCookie.getValue(), "avos:sess.sig="
-            + cookieSign.getValue()));
+    List<String> values = new ArrayList<>(Arrays.asList("avos:sess=" + userCookie.getValue(),
+        "avos:sess.sig=" + cookieSign.getValue()));
     Map<String, List<String>> cookies = new HashMap<>();
     cookies.put("Set-Cookie", values);
     client.getCookieHandler().put(new URI("http://0.0.0.0:3000"), cookies);
