@@ -28,6 +28,7 @@ import com.avos.avoscloud.internal.InternalConfigurationController;
 import com.avos.avoscloud.internal.MasterKeyConfiguration;
 import com.avos.avoscloud.internal.impl.EngineAppConfiguration;
 import com.avos.avoscloud.internal.impl.EnginePersistenceImplementation;
+import com.avos.avoscloud.internal.impl.JavaAppConfiguration;
 
 
 @WebServlet(name = "LeanEngineServlet", urlPatterns = {"/1/functions/*", "/1.1/functions/*",
@@ -43,6 +44,17 @@ public class LeanEngine extends HttpServlet {
   static {
     InternalConfigurationController.globalInstance().setInternalPersistence(
         EnginePersistenceImplementation.instance());
+    if (InternalConfigurationController.globalInstance().getAppConfiguration() instanceof JavaAppConfiguration) {
+      JavaAppConfiguration existingAppConfiguration =
+          (JavaAppConfiguration) InternalConfigurationController.globalInstance()
+              .getAppConfiguration();
+
+      EngineAppConfiguration.instance().setApplicationId(
+          existingAppConfiguration.getApplicationId());
+
+      EngineAppConfiguration.instance().setClientKey(existingAppConfiguration.getClientKey());
+      EngineAppConfiguration.instance().setMasterKey(existingAppConfiguration.getMasterKey());
+    }
     InternalConfigurationController.globalInstance().setAppConfiguration(
         EngineAppConfiguration.instance());
   }
