@@ -27,10 +27,11 @@ class RequestAuth {
     }
 
     if (LeanEngine.getAppId().equals(info.getAppId()) //
-        && LeanEngine.getAppKey().equals(info.getAppKey()) //
-        || LeanEngine.getMasterKey().equals(info.getAppKey()) //
-        || LeanEngine.getMasterKey().equals(info.getMasterKey())) {
+        && (LeanEngine.getAppKey().equals(info.getAppKey()) //
+            || LeanEngine.getMasterKey().equals(info.getAppKey()) //
+        || LeanEngine.getMasterKey().equals(info.getMasterKey()))) {
       if (LeanEngine.getMasterKey().equals(info.getMasterKey())) {
+        // 只有masterKey时才能获取metaData
         req.setAttribute("authMasterKey", true);
       }
       req.setAttribute(ATTRIBUTE_KEY, info);
@@ -48,8 +49,10 @@ class RequestAuth {
       String computedSign = EngineRequestSign.requestSign(Long.parseLong(ts), useMasterKey);
       if (info.getSign().equals(computedSign)) {
         req.setAttribute(ATTRIBUTE_KEY, info);
+        return;
       }
     }
+    throw new UnauthException();
   }
 
   private RequestAuth(HttpServletRequest req) {
@@ -126,9 +129,8 @@ class UnauthException extends Exception {
   public void resp(HttpServletResponse resp) throws IOException {
     resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
     resp.setContentType(LeanEngine.JSON_CONTENT_TYPE);
-    resp.getWriter().println("{\"code\":\"401\",\"error\":\"Unauthorized.\"}");
+    resp.getWriter().println("{\"code\":401,\"error\":\"Unauthorized.\"}");
   }
-
 }
 
 
@@ -136,6 +138,6 @@ class InvalidParameterException extends Exception {
   public void resp(HttpServletResponse resp) throws IOException {
     resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
     resp.setContentType(LeanEngine.JSON_CONTENT_TYPE);
-    resp.getWriter().println("{\"code\":\"400\",\"error\":\"Invalid paramters.\"}");
+    resp.getWriter().println("{\"code\":400,\"error\":\"Invalid paramters.\"}");
   }
 }
