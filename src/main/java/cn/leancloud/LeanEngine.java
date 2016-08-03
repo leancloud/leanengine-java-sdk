@@ -146,7 +146,6 @@ public class LeanEngine extends HttpServlet {
       RequestAuth.auth(req);
     } catch (UnauthException e) {
       e.resp(resp);
-      e.printStackTrace();
       return;
     }
     EndpointInfo internalEndpoint = EndpointParser.getInternalEndpoint(req);
