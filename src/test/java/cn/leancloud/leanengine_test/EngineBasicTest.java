@@ -9,14 +9,16 @@ import org.eclipse.jetty.servlet.ServletHandler;
 import org.junit.After;
 import org.junit.Before;
 
+import com.avos.avoscloud.AVOSCloud;
+import com.avos.avoscloud.internal.impl.EngineRequestSign;
+import com.avos.avoscloud.okhttp.OkHttpClient;
+import com.avos.avoscloud.okhttp.Request;
+
 import cn.leancloud.EngineSessionCookie;
 import cn.leancloud.HttpsRequestRedirectFilter;
 import cn.leancloud.LeanEngine;
+import cn.leancloud.LeanEngineHealthCheckServlet;
 import cn.leancloud.RequestUserAuthFilter;
-
-import com.avos.avoscloud.AVOSCloud;
-import com.avos.avoscloud.internal.impl.EngineRequestSign;
-import com.avos.avoscloud.okhttp.Request;
 
 public class EngineBasicTest {
 
@@ -24,6 +26,7 @@ public class EngineBasicTest {
   private static int port = 3000;
 
   String secret = "05XgTktKPMkU";
+  OkHttpClient client = new OkHttpClient();
 
   @Before
   public void setUp() throws Exception {
@@ -38,6 +41,7 @@ public class EngineBasicTest {
     server = new Server(port);
     ServletHandler handler = new ServletHandler();
     server.setHandler(handler);
+    handler.addServletWithMapping(LeanEngineHealthCheckServlet.class, "/__engine/1/ping");
     handler.addServletWithMapping(LeanEngine.class, "/1.1/functions/*");
     handler.addServletWithMapping(LeanEngine.class, "/1.1/call/*");
 
