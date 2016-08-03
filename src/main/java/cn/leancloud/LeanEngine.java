@@ -26,6 +26,7 @@ import com.avos.avoscloud.PaasClient;
 import com.avos.avoscloud.internal.AppConfiguration;
 import com.avos.avoscloud.internal.InternalConfigurationController;
 import com.avos.avoscloud.internal.MasterKeyConfiguration;
+import com.avos.avoscloud.internal.impl.EngineAppConfiguration;
 import com.avos.avoscloud.internal.impl.EnginePersistenceImplementation;
 
 
@@ -42,6 +43,8 @@ public class LeanEngine extends HttpServlet {
   static {
     InternalConfigurationController.globalInstance().setInternalPersistence(
         EnginePersistenceImplementation.instance());
+    InternalConfigurationController.globalInstance().setAppConfiguration(
+        EngineAppConfiguration.instance());
   }
 
   private static EngineSessionCookie sessionCookie;
