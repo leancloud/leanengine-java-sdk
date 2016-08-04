@@ -26,7 +26,9 @@ import com.avos.avoscloud.PaasClient;
 import com.avos.avoscloud.internal.AppConfiguration;
 import com.avos.avoscloud.internal.InternalConfigurationController;
 import com.avos.avoscloud.internal.MasterKeyConfiguration;
+import com.avos.avoscloud.internal.impl.EngineAppConfiguration;
 import com.avos.avoscloud.internal.impl.EnginePersistenceImplementation;
+import com.avos.avoscloud.internal.impl.JavaRequestSignImplementation;
 
 
 @WebServlet(name = "LeanEngineServlet", urlPatterns = {"/1/functions/*", "/1.1/functions/*",
@@ -38,11 +40,33 @@ public class LeanEngine extends HttpServlet {
   public static final long serialVersionUID = 3962660277165698922L;
   static volatile boolean httpsRedirectionEnabled = false;
 
-  private static Map<String, EngineHandlerInfo> funcs = new HashMap<String, EngineHandlerInfo>();
-  static {
+  /**
+   * <p>
+   * Authenticates this client as belonging to your application. This must be called before your
+   * application can use the AVOSCloud library. The recommended way is to put a call to
+   * LeanEngine.initialize in each of your onCreate methods. An example:
+   * </p>
+   * 
+   * <pre>
+   * @param applicationId  The application id provided in the AVOSCloud dashboard.
+   * @param clientKey The client key provided in the AVOSCloud dashboard.
+   * @param masterKey The master key provided in the AVOSCloud dashboard.
+   */
+  public static void initialize(String applicationId, String clientKey, String masterKey) {
     InternalConfigurationController.globalInstance().setInternalPersistence(
         EnginePersistenceImplementation.instance());
+    InternalConfigurationController.globalInstance().setAppConfiguration(
+        EngineAppConfiguration.instance());
+    InternalConfigurationController.globalInstance().setInternalRequestSign(
+        JavaRequestSignImplementation.instance());
+
+    InternalConfigurationController.globalInstance().getAppConfiguration()
+        .setApplicationId(applicationId);
+    InternalConfigurationController.globalInstance().getAppConfiguration().setClientKey(clientKey);
+    EngineAppConfiguration.instance().setMasterKey(masterKey);
   }
+
+  private static Map<String, EngineHandlerInfo> funcs = new HashMap<String, EngineHandlerInfo>();
 
   private static EngineSessionCookie sessionCookie;
 
