@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.avos.avoscloud.AVOSCloud;
-import com.avos.avoscloud.internal.impl.EngineRequestSign;
+import com.avos.avoscloud.internal.impl.JavaRequestSignImplementation;
 
 import cn.leancloud.LeanEngine;
 
@@ -27,7 +27,7 @@ public class HelloServlet extends HttpServlet {
     LeanEngine.register(AllIMHook.class);
     AVOSCloud.initialize("uu2P5gNTxGhjyaJGAPPnjCtJ-gzGzoHsz", "j5lErUd6q7LhPD8CXhfmA2Rg",
         "atXAmIVlQoBDBLqumMgzXhcY");
-    EngineRequestSign.instance().setUserMasterKey(true);
+    JavaRequestSignImplementation.instance().setUseMasterKey(true);
   }
 
   @Override

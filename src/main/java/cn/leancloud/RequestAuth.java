@@ -6,7 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.avos.avoscloud.AVUtils;
-import com.avos.avoscloud.internal.impl.EngineRequestSign;
+import com.avos.avoscloud.internal.impl.JavaRequestSignImplementation;
 
 class RequestAuth {
 
@@ -46,7 +46,7 @@ class RequestAuth {
         master = split[2];
       }
       boolean useMasterKey = "master".equals(master);
-      String computedSign = EngineRequestSign.requestSign(Long.parseLong(ts), useMasterKey);
+      String computedSign = JavaRequestSignImplementation.requestSign(Long.parseLong(ts), useMasterKey);
       if (info.getSign().equals(computedSign)) {
         req.setAttribute(ATTRIBUTE_KEY, info);
         return;

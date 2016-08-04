@@ -28,7 +28,7 @@ import com.avos.avoscloud.internal.InternalConfigurationController;
 import com.avos.avoscloud.internal.MasterKeyConfiguration;
 import com.avos.avoscloud.internal.impl.EngineAppConfiguration;
 import com.avos.avoscloud.internal.impl.EnginePersistenceImplementation;
-import com.avos.avoscloud.internal.impl.EngineRequestSign;
+import com.avos.avoscloud.internal.impl.JavaRequestSignImplementation;
 
 
 @WebServlet(name = "LeanEngineServlet", urlPatterns = {"/1/functions/*", "/1.1/functions/*",
@@ -58,7 +58,7 @@ public class LeanEngine extends HttpServlet {
     InternalConfigurationController.globalInstance().setAppConfiguration(
         EngineAppConfiguration.instance());
     InternalConfigurationController.globalInstance().setInternalRequestSign(
-        EngineRequestSign.instance());
+        JavaRequestSignImplementation.instance());
 
     InternalConfigurationController.globalInstance().getAppConfiguration()
         .setApplicationId(applicationId);

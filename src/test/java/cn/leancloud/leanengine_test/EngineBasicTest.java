@@ -16,7 +16,7 @@ import cn.leancloud.LeanEngineHealthCheckServlet;
 import cn.leancloud.RequestUserAuthFilter;
 
 import com.avos.avoscloud.AVOSCloud;
-import com.avos.avoscloud.internal.impl.EngineRequestSign;
+import com.avos.avoscloud.internal.impl.JavaRequestSignImplementation;
 import com.avos.avoscloud.okhttp.OkHttpClient;
 import com.avos.avoscloud.okhttp.Request;
 
@@ -35,7 +35,7 @@ public class EngineBasicTest {
     LeanEngine.initialize("uu2P5gNTxGhjyaJGAPPnjCtJ-gzGzoHsz", "j5lErUd6q7LhPD8CXhfmA2Rg",
         "atXAmIVlQoBDBLqumMgzXhcY");
     LeanEngine.setLocalEngineCallEnabled(true);
-    EngineRequestSign.instance().setUserMasterKey(true);
+    JavaRequestSignImplementation.instance().setUseMasterKey(true);
     LeanEngine.addSessionCookie(new EngineSessionCookie(secret, 160000, true));
     AVOSCloud.setDebugLogEnabled(true);
 
