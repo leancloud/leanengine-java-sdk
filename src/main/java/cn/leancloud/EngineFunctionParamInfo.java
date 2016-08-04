@@ -59,7 +59,7 @@ public class EngineFunctionParamInfo {
     if (map != null && map.containsKey("className") && map.containsKey("__type")
         && "Object".equals(map.get("__type"))) {
       // 这肯定是一个AVObject吧
-      AVObject object = new AVObject((String) map.get("className"));
+      AVObject object = AVUtils.newAVObjectByClassName((String) map.get("className"));
       AVUtils.copyPropertiesFromMapToAVObject(map, object);
       return object;
     } else if (map != null) {
