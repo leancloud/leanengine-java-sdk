@@ -31,7 +31,8 @@ public class EngineBasicTest {
   @Before
   public void setUp() throws Exception {
     System.setProperty("LEANCLOUD_APP_PORT", "3000");
-    AVOSCloud.initialize("uu2P5gNTxGhjyaJGAPPnjCtJ-gzGzoHsz", "j5lErUd6q7LhPD8CXhfmA2Rg",
+    System.setProperty("LC_API_SERVER", "https://api.leancloud.cn");
+    LeanEngine.initialize("uu2P5gNTxGhjyaJGAPPnjCtJ-gzGzoHsz", "j5lErUd6q7LhPD8CXhfmA2Rg",
         "atXAmIVlQoBDBLqumMgzXhcY");
     LeanEngine.setLocalEngineCallEnabled(true);
     EngineRequestSign.instance().setUserMasterKey(true);

@@ -28,6 +28,7 @@ import com.avos.avoscloud.internal.InternalConfigurationController;
 import com.avos.avoscloud.internal.MasterKeyConfiguration;
 import com.avos.avoscloud.internal.impl.EngineAppConfiguration;
 import com.avos.avoscloud.internal.impl.EnginePersistenceImplementation;
+import com.avos.avoscloud.internal.impl.EngineRequestSign;
 
 
 @WebServlet(name = "LeanEngineServlet", urlPatterns = {"/1/functions/*", "/1.1/functions/*",
@@ -51,20 +52,18 @@ public class LeanEngine extends HttpServlet {
    * @param clientKey The client key provided in the AVOSCloud dashboard.
    * @param masterKey The master key provided in the AVOSCloud dashboard.
    */
-  public static void intialize(String applicationId, String clientKey, String masterKey) {
-
+  public static void initialize(String applicationId, String clientKey, String masterKey) {
     InternalConfigurationController.globalInstance().setInternalPersistence(
         EnginePersistenceImplementation.instance());
     InternalConfigurationController.globalInstance().setAppConfiguration(
         EngineAppConfiguration.instance());
+    InternalConfigurationController.globalInstance().setInternalRequestSign(
+        EngineRequestSign.instance());
 
     InternalConfigurationController.globalInstance().getAppConfiguration()
         .setApplicationId(applicationId);
     InternalConfigurationController.globalInstance().getAppConfiguration().setClientKey(clientKey);
-    if (InternalConfigurationController.globalInstance().getAppConfiguration() instanceof MasterKeyConfiguration) {
-      ((MasterKeyConfiguration) InternalConfigurationController.globalInstance()
-          .getAppConfiguration()).setMasterKey(masterKey);
-    }
+    EngineAppConfiguration.instance().setMasterKey(masterKey);
   }
 
   private static Map<String, EngineHandlerInfo> funcs = new HashMap<String, EngineHandlerInfo>();
