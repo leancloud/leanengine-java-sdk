@@ -20,6 +20,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.avos.avoscloud.AVException;
+import com.avos.avoscloud.AVOSCloud;
 import com.avos.avoscloud.AVOSServices;
 import com.avos.avoscloud.AVUtils;
 import com.avos.avoscloud.PaasClient;
@@ -194,6 +195,9 @@ public class LeanEngine extends HttpServlet {
           InvalidParameterException ex = new InvalidParameterException();
           ex.resp(resp);
         }
+        if (AVOSCloud.isDebugLogEnabled()) {
+          e.printStackTrace();
+        }
       } catch (Exception e) {
         if (internalEndpoint.isNeedResponse()) {
           resp.setContentType(JSON_CONTENT_TYPE);
@@ -203,6 +207,9 @@ public class LeanEngine extends HttpServlet {
           result.put("error", e.getCause() != null ? e.getCause().getMessage() : e.getMessage());
           resp.setStatus(Response.SC_BAD_REQUEST);
           resp.getWriter().write(result.toJSONString());
+        }
+        if (AVOSCloud.isDebugLogEnabled()) {
+          e.printStackTrace();
         }
       }
     }
