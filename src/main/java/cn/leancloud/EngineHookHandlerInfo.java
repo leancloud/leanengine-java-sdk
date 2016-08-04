@@ -25,7 +25,7 @@ public class EngineHookHandlerInfo extends EngineHandlerInfo {
     if (AVUser.class.isAssignableFrom(paramInfo.type)) {
       param = new AVUser();
     } else {
-      param = new AVObject(hookClass);
+      param = AVUtils.newAVObjectByClassName(hookClass);
     }
     EngineRequestContext.parseMetaData((Map<String, Object>) hookParams.get(paramInfo.getName()));
     AVUtils.copyPropertiesFromMapToAVObject(

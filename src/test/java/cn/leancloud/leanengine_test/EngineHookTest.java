@@ -161,4 +161,15 @@ public class EngineHookTest extends EngineBasicTest {
     AVCloud.callFunction("TestReview/afterDelete", p);
   }
 
+  @Test
+  public void testSubObjectHook() throws Exception {
+    String content = "{\"object\":{\"content\":\"shit\"}}";
+    OkHttpClient client = new OkHttpClient();
+    Request.Builder builder = this.getBasicTestRequestBuilder();
+    builder.url("http://localhost:3000/1.1/functions/Todo/beforeSave");
+    builder.post(RequestBody.create(MediaType.parse(getContentType()), content));
+    Response response = client.newCall(builder.build()).execute();
+    assertEquals(HttpServletResponse.SC_OK, response.code());
+  }
+
 }
