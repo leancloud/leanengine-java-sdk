@@ -2,15 +2,15 @@ package cn.leancloud.leanengine_test;
 
 import java.util.List;
 
-import cn.leancloud.EngineHook;
-import cn.leancloud.EngineHookType;
-import cn.leancloud.EngineRequestContext;
-import cn.leancloud.leanengine_test.data.Todo;
-
 import com.avos.avoscloud.AVException;
 import com.avos.avoscloud.AVObject;
 import com.avos.avoscloud.AVUser;
 import com.avos.avoscloud.AVUtils;
+
+import cn.leancloud.EngineHook;
+import cn.leancloud.EngineHookType;
+import cn.leancloud.EngineRequestContext;
+import cn.leancloud.leanengine_test.data.Todo;
 
 public class AllEngineHook {
 
@@ -55,12 +55,10 @@ public class AllEngineHook {
   }
 
   @EngineHook(className = "TestReview", type = EngineHookType.beforeUpdate)
-  public static AVObject testBeforeUpdate(AVObject object) throws Exception {
+  public static void testBeforeUpdate(AVObject object) throws Exception {
     List<String> updateKeys = EngineRequestContext.getUpdateKeys();
     if (updateKeys == null || updateKeys.isEmpty()) {
       throw new AVException(400, "nothing to update");
-    } else {
-      return object;
     }
   }
 

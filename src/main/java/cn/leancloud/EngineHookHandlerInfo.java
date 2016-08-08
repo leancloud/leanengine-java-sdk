@@ -1,6 +1,7 @@
 package cn.leancloud;
 
 import java.lang.reflect.Method;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,11 +37,22 @@ public class EngineHookHandlerInfo extends EngineHandlerInfo {
   @Override
   public Object wrapperResponse(Object result, String requestBody, boolean rpcCall) {
     Map<String, Object> hookParams = new HashMap<String, Object>();
-    Map<String, Object> objectMapping =
-        (Map<String, Object>) AVUtils.getParsedObject(result, true, true);
-    objectMapping.remove("__type");
-    objectMapping.remove("className");
-    hookParams.putAll(objectMapping);
+    if (result != null) {
+      Map<String, Object> objectMapping =
+          (Map<String, Object>) AVUtils.getParsedObject(result, true, true);
+      objectMapping.remove("__type");
+      objectMapping.remove("className");
+      hookParams.putAll(objectMapping);
+    }
+    long ts = new Date().getTime();
+    String sign = LeanEngine.hmacSha1(endPoint + ":" + ts, LeanEngine.getMasterKey());
+    if (endPoint.startsWith("__before")) {
+      hookParams.put("__before", ts + "," + sign);
+    }
+    if (endPoint.startsWith("__after")) {
+      hookParams.put("__after", ts + "," + sign);
+    }
     return hookParams;
   }
+
 }

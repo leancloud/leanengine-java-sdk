@@ -9,18 +9,19 @@ import org.eclipse.jetty.servlet.ServletHandler;
 import org.junit.After;
 import org.junit.Before;
 
+import com.avos.avoscloud.AVOSCloud;
+import com.avos.avoscloud.AVObject;
+import com.avos.avoscloud.internal.impl.JavaRequestSignImplementation;
+import com.avos.avoscloud.okhttp.OkHttpClient;
+import com.avos.avoscloud.okhttp.Request;
+
+import cn.leancloud.CloudCodeServlet;
 import cn.leancloud.EngineSessionCookie;
 import cn.leancloud.HttpsRequestRedirectFilter;
 import cn.leancloud.LeanEngine;
 import cn.leancloud.LeanEngineHealthCheckServlet;
 import cn.leancloud.RequestUserAuthFilter;
 import cn.leancloud.leanengine_test.data.Todo;
-
-import com.avos.avoscloud.AVOSCloud;
-import com.avos.avoscloud.AVObject;
-import com.avos.avoscloud.internal.impl.JavaRequestSignImplementation;
-import com.avos.avoscloud.okhttp.OkHttpClient;
-import com.avos.avoscloud.okhttp.Request;
 
 public class EngineBasicTest {
 
@@ -46,8 +47,8 @@ public class EngineBasicTest {
     ServletHandler handler = new ServletHandler();
     server.setHandler(handler);
     handler.addServletWithMapping(LeanEngineHealthCheckServlet.class, "/__engine/1/ping");
-    handler.addServletWithMapping(LeanEngine.class, "/1.1/functions/*");
-    handler.addServletWithMapping(LeanEngine.class, "/1.1/call/*");
+    handler.addServletWithMapping(CloudCodeServlet.class, "/1.1/functions/*");
+    handler.addServletWithMapping(CloudCodeServlet.class, "/1.1/call/*");
 
     handler.addFilterWithMapping(HttpsRequestRedirectFilter.class, "/*",
         EnumSet.of(DispatcherType.INCLUDE, DispatcherType.REQUEST));

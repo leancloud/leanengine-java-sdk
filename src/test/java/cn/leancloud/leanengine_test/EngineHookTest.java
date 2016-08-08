@@ -2,6 +2,7 @@ package cn.leancloud.leanengine_test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -11,8 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.junit.Test;
 
-import cn.leancloud.LeanEngine;
-
+import com.alibaba.fastjson.JSON;
 import com.avos.avoscloud.AVCloud;
 import com.avos.avoscloud.AVException;
 import com.avos.avoscloud.AVObject;
@@ -23,6 +23,8 @@ import com.avos.avoscloud.okhttp.OkHttpClient;
 import com.avos.avoscloud.okhttp.Request;
 import com.avos.avoscloud.okhttp.RequestBody;
 import com.avos.avoscloud.okhttp.Response;
+
+import cn.leancloud.LeanEngine;
 
 public class EngineHookTest extends EngineBasicTest {
 
@@ -41,7 +43,7 @@ public class EngineHookTest extends EngineBasicTest {
     builder.post(RequestBody.create(MediaType.parse(getContentType()), content));
     Response response = client.newCall(builder.build()).execute();
     assertEquals(HttpServletResponse.SC_OK, response.code());
-    assertEquals("{\"star\":30}", new String(response.body().bytes()));
+    assertTrue(new String(response.body().bytes()).indexOf("\"star\":30") != -1);
   }
 
   @Test
@@ -53,8 +55,8 @@ public class EngineHookTest extends EngineBasicTest {
     builder.post(RequestBody.create(MediaType.parse(getContentType()), content));
     Response response = client.newCall(builder.build()).execute();
     assertEquals(HttpServletResponse.SC_BAD_REQUEST, response.code());
-    assertEquals("{\"code\":400,\"error\":\"star should less than 50\"}", new String(response
-        .body().bytes()));
+    assertEquals("{\"code\":400,\"error\":\"star should less than 50\"}",
+        new String(response.body().bytes()));
   }
 
   @Test
@@ -116,6 +118,22 @@ public class EngineHookTest extends EngineBasicTest {
     Map<String, Object> p = new HashMap<String, Object>();
     p.put("object", restData);
     AVCloud.callFunction("TestReview/beforeUpdate", p);
+  }
+
+  @Test
+  public void testBeforeUpdate2() throws Exception {
+    String content = "{\"object\":{\"star\":35,\"ACL\":{\"*\":{\"write\":true,\"read\":true}}" //
+        + ",\"createdAt\":\"2016-08-06T11:22:54.489Z\",\"updatedAt\":\"2016-08-06T14:03:16.422Z\"" //
+        + ",\"objectId\":\"57a6bf9c8ac247005f2d8c7b\",\"_updatedKeys\":[\"comment\"]," //
+        + "\"__before\":\"1470492196423,ecb100deddd9bcf45dc5450fdc199c294e3ffe7d\"},\"user\":null}";
+    OkHttpClient client = new OkHttpClient();
+    Request.Builder builder = this.getBasicTestRequestBuilder();
+    builder.url("http://localhost:3000/1.1/functions/TestReview/beforeUpdate");
+    builder.post(RequestBody.create(MediaType.parse(getContentType()), content));
+    Response response = client.newCall(builder.build()).execute();
+    assertEquals(HttpServletResponse.SC_OK, response.code());
+    assertEquals(JSON.parseObject(content, Map.class).get("object"),
+        JSON.parseObject(response.body().string(), Map.class));
   }
 
   @Test

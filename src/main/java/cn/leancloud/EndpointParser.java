@@ -63,5 +63,11 @@ public class EndpointParser {
     public String getInternalEndpoint() {
       return internalEndpoint;
     }
+
+    @Override
+    public String toString() {
+      return "EndpointInfo [needResponse=" + needResponse + ", isRPCcall=" + isRPCcall
+          + ", internalEndpoint=" + internalEndpoint + "]";
+    }
   }
 }
