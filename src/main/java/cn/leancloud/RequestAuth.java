@@ -5,10 +5,15 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.avos.avoscloud.AVUtils;
 import com.avos.avoscloud.internal.impl.JavaRequestSignImplementation;
 
 class RequestAuth {
+
+  private static final Logger logger = LogManager.getLogger(RequestAuth.class);
 
   public static final String ATTRIBUTE_KEY = "requestAuth";
   public static final String USER_KEY = "authUser";
@@ -21,6 +26,7 @@ class RequestAuth {
 
   public static void auth(HttpServletRequest req) throws UnauthException {
     RequestAuth info = new RequestAuth(req);
+    logger.debug("request auth: {}", info);
 
     if (info.getAppId() == null) {
       throw new UnauthException();
@@ -29,7 +35,7 @@ class RequestAuth {
     if (LeanEngine.getAppId().equals(info.getAppId()) //
         && (LeanEngine.getAppKey().equals(info.getAppKey()) //
             || LeanEngine.getMasterKey().equals(info.getAppKey()) //
-        || LeanEngine.getMasterKey().equals(info.getMasterKey()))) {
+            || LeanEngine.getMasterKey().equals(info.getMasterKey()))) {
       if (LeanEngine.getMasterKey().equals(info.getMasterKey())) {
         // 只有masterKey时才能获取metaData
         req.setAttribute("authMasterKey", true);
@@ -46,7 +52,8 @@ class RequestAuth {
         master = split[2];
       }
       boolean useMasterKey = "master".equals(master);
-      String computedSign = JavaRequestSignImplementation.requestSign(Long.parseLong(ts), useMasterKey);
+      String computedSign =
+          JavaRequestSignImplementation.requestSign(Long.parseLong(ts), useMasterKey);
       if (info.getSign().equals(computedSign)) {
         req.setAttribute(ATTRIBUTE_KEY, info);
         return;
@@ -67,9 +74,8 @@ class RequestAuth {
         masterKey = appKey.substring(0, appKey.indexOf(",master"));
         appKey = null;
       }
-      prod =
-          getHeaders(req, "x-lc-prod", "x-avoscloud-application-production",
-              "x-uluru-application-production");
+      prod = getHeaders(req, "x-lc-prod", "x-avoscloud-application-production",
+          "x-uluru-application-production");
       if ("false".equals(prod)) {
         prod = "0";
       }
@@ -119,6 +125,15 @@ class RequestAuth {
   public String getSign() {
     return sign;
   }
+
+  @Override
+  public String toString() {
+    return "RequestAuth [appId=" + appId + ", appKey="
+        + (appKey != null ? appKey.substring(0, 2) + "..." : null) //
+        + ", masterKey=" + (masterKey != null ? masterKey.substring(0, 2) + "..." : null) //
+        + ", prod=" + prod + ", sessionToken=" + sessionToken + ", sign=" + sign + "]";
+  }
+
 }
 
 

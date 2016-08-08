@@ -9,6 +9,9 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.avos.avoscloud.AVObject;
@@ -17,6 +20,8 @@ import com.avos.avoscloud.AVUtils;
 import com.avos.avoscloud.LogUtil;
 
 public abstract class EngineHandlerInfo {
+
+  private static final Logger logger = LogManager.getLogger(EngineHandlerInfo.class);
 
   static final String OBJECT = "object";
   static final String USER = "user";
@@ -61,12 +66,12 @@ public abstract class EngineHandlerInfo {
       sb.append(line);
     }
     String requestBody = sb.toString();
+    logger.debug("request body: {}", requestBody);
     Object returnValue = null;
     Object params = this.parseParams(requestBody);
-    returnValue =
-        methodParameterList.size() == 0 ? handlerMethod.invoke(null)
-            : params.getClass().isArray() ? handlerMethod.invoke(null, (Object[]) params)
-                : handlerMethod.invoke(null, params);
+    returnValue = methodParameterList.size() == 0 ? handlerMethod.invoke(null)
+        : params.getClass().isArray() ? handlerMethod.invoke(null, (Object[]) params)
+            : handlerMethod.invoke(null, params);
     returnValue = this.wrapperResponse(returnValue, requestBody, rpcCall);
     return returnValue;
   }
@@ -95,8 +100,8 @@ public abstract class EngineHandlerInfo {
       Annotation[] array = annotationMatrix[index];
       for (Annotation an : array) {
         if (an instanceof EngineFunctionParam) {
-          params.add(new EngineFunctionParamInfo(paramTypesArray[index], ((EngineFunctionParam) an)
-              .value()));
+          params.add(new EngineFunctionParamInfo(paramTypesArray[index],
+              ((EngineFunctionParam) an).value()));
         }
       }
     }
@@ -110,8 +115,14 @@ public abstract class EngineHandlerInfo {
     } else {
       params.add(new EngineFunctionParamInfo(AVObject.class, OBJECT));
     }
-    return new EngineHookHandlerInfo(EndpointParser.getInternalEndpoint(hook.className(),
-        hook.type()), method, params, null, hook.className());
+    if (EngineHookType.beforeUpdate.equals(hook.type())) {
+      return new BeforeUpdateHookHandlerInfo(
+          EndpointParser.getInternalEndpoint(hook.className(), hook.type()), method, params, null,
+          hook.className());
+    }
+    return new EngineHookHandlerInfo(
+        EndpointParser.getInternalEndpoint(hook.className(), hook.type()), method, params, null,
+        hook.className());
   }
 
   public static EngineHandlerInfo getEngineHandlerInfo(Method method, IMHook hook) {

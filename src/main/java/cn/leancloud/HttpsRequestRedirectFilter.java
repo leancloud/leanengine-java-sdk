@@ -25,7 +25,6 @@ public class HttpsRequestRedirectFilter implements Filter {
         HttpServletRequest req = ((HttpServletRequest) request);
         String host = req.getHeader("host");
         String protocol = req.getHeader("x-forwarded-proto");
-        String url = req.getRequestURL().toString();
         String path = req.getRequestURI();
         if ("production".equals(LeanEngine.getAppEnv().toLowerCase()) && host != null
             && host.endsWith("leanapp.cn") && !"https".equals(protocol)) {
