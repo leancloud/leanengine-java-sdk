@@ -61,8 +61,18 @@ public class EngineSessionCookie {
           host = requestURL.getHost();
         } catch (Exception e) {
         }
-        addCookie(req, resp, sign.encodeUser(u));
-        addCookie(req, resp, sign.getCookieSign(u));
+        Cookie userCookie = sign.encodeUser(u);
+        Cookie userSignCookie = sign.getCookieSign(u);
+        if (userCookie != null) {
+          userCookie.setDomain(host);
+          userCookie.setPath("/");
+          addCookie(req, resp, userCookie);
+        }
+        if (userSignCookie != null) {
+          userSignCookie.setDomain(host);
+          userSignCookie.setPath("/");
+          addCookie(req, resp, userSignCookie);
+        }
       }
     } else {
       responseHolder.set(null);
