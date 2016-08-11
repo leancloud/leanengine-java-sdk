@@ -133,6 +133,17 @@ public class LeanEngine {
     }
   }
 
+  /**
+   * 设置在与 LeanCloud 服务器进行沟通的时候是否使用 masterKey
+   * 
+   * 使用 masterKey 时， API 将拥有全部权限，不再受到权限的限制
+   * 
+   * @param useMasterKey
+   */
+  public static void setUseMasterKey(boolean useMasterKey) {
+    JavaRequestSignImplementation.instance().setUseMasterKey(useMasterKey);
+  }
+
   protected static Set<String> getMetaData() {
     return funcs.keySet();
   }

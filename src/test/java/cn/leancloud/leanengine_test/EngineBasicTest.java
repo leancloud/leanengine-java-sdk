@@ -9,12 +9,6 @@ import org.eclipse.jetty.servlet.ServletHandler;
 import org.junit.After;
 import org.junit.Before;
 
-import com.avos.avoscloud.AVOSCloud;
-import com.avos.avoscloud.AVObject;
-import com.avos.avoscloud.internal.impl.JavaRequestSignImplementation;
-import com.avos.avoscloud.okhttp.OkHttpClient;
-import com.avos.avoscloud.okhttp.Request;
-
 import cn.leancloud.CloudCodeServlet;
 import cn.leancloud.EngineSessionCookie;
 import cn.leancloud.HttpsRequestRedirectFilter;
@@ -22,6 +16,11 @@ import cn.leancloud.LeanEngine;
 import cn.leancloud.LeanEngineHealthCheckServlet;
 import cn.leancloud.RequestUserAuthFilter;
 import cn.leancloud.leanengine_test.data.Todo;
+
+import com.avos.avoscloud.AVOSCloud;
+import com.avos.avoscloud.AVObject;
+import com.avos.avoscloud.okhttp.OkHttpClient;
+import com.avos.avoscloud.okhttp.Request;
 
 public class EngineBasicTest {
 
@@ -39,7 +38,7 @@ public class EngineBasicTest {
     LeanEngine.initialize("uu2P5gNTxGhjyaJGAPPnjCtJ-gzGzoHsz", "j5lErUd6q7LhPD8CXhfmA2Rg",
         "atXAmIVlQoBDBLqumMgzXhcY");
     LeanEngine.setLocalEngineCallEnabled(true);
-    JavaRequestSignImplementation.instance().setUseMasterKey(true);
+    LeanEngine.setUseMasterKey(true);
     LeanEngine.addSessionCookie(new EngineSessionCookie(secret, 160000, true));
     AVOSCloud.setDebugLogEnabled(true);
 
