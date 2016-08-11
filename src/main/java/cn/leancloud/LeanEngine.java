@@ -10,9 +10,10 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.commons.codec.binary.Hex;
 
-import com.avos.avoscloud.internal.InternalConfigurationController;
+import com.avos.avoscloud.internal.InternalConfigurationController.Builder;
 import com.avos.avoscloud.internal.impl.EnginePersistenceImplementation;
 import com.avos.avoscloud.internal.impl.JavaRequestSignImplementation;
+import com.avos.avoscloud.internal.impl.Log4j2Implementation;
 
 
 public class LeanEngine {
@@ -38,11 +39,10 @@ public class LeanEngine {
    */
   public static void initialize(String applicationId, String clientKey, String masterKey) {
     appConf = new EngineAppConfiguration(applicationId, clientKey, masterKey);
-    InternalConfigurationController confController =
-        InternalConfigurationController.globalInstance();
-    confController.setInternalPersistence(EnginePersistenceImplementation.instance());
-    confController.setAppConfiguration(appConf);
-    confController.setInternalRequestSign(JavaRequestSignImplementation.instance());
+    Builder builder = new Builder();
+    builder.setInternalPersistence(EnginePersistenceImplementation.instance())
+        .setInternalLogger(Log4j2Implementation.instance()).setAppConfiguration(appConf)
+        .setInternalRequestSign(JavaRequestSignImplementation.instance()).build();
   }
 
   private static Map<String, EngineHandlerInfo> funcs = new HashMap<String, EngineHandlerInfo>();
