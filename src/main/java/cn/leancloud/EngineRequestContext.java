@@ -51,6 +51,9 @@ public class EngineRequestContext {
 
   protected static void parseMetaData(Map<String, Object> objectProperties) {
     Map<String, Object> meta = new HashMap<String, Object>();
+    if (objectProperties == null) {
+      return;
+    }
     if (objectProperties.containsKey(UPDATED_KEYS)) {
       Object updateValues = objectProperties.remove(UPDATED_KEYS);
       meta.put(UPDATED_KEYS, updateValues);
