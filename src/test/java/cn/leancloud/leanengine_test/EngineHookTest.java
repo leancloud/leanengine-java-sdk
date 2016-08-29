@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -11,8 +12,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
 
 import org.junit.Test;
-
-import cn.leancloud.LeanEngine;
 
 import com.alibaba.fastjson.JSON;
 import com.avos.avoscloud.AVCloud;
@@ -25,6 +24,8 @@ import com.avos.avoscloud.okhttp.OkHttpClient;
 import com.avos.avoscloud.okhttp.Request;
 import com.avos.avoscloud.okhttp.RequestBody;
 import com.avos.avoscloud.okhttp.Response;
+
+import cn.leancloud.LeanEngine;
 
 public class EngineHookTest extends EngineBasicTest {
 
@@ -55,8 +56,8 @@ public class EngineHookTest extends EngineBasicTest {
     builder.post(RequestBody.create(MediaType.parse(getContentType()), content));
     Response response = client.newCall(builder.build()).execute();
     assertEquals(HttpServletResponse.SC_BAD_REQUEST, response.code());
-    assertEquals("{\"code\":400,\"error\":\"star should less than 50\"}", new String(response
-        .body().bytes()));
+    assertEquals("{\"code\":400,\"error\":\"star should less than 50\"}",
+        new String(response.body().bytes()));
   }
 
   @Test
@@ -78,6 +79,34 @@ public class EngineHookTest extends EngineBasicTest {
       assertEquals(400, e.getCode());
       assertEquals("forbidden", e.getLocalizedMessage());
     }
+  }
+
+  @Test
+  public void testOnLogin2() throws IOException {
+    String content =
+        "{\"object\":{\"objectId\":\"57c3b6110a2b58006cfb7be7\",\"username\":\"testUser\","
+            + "\"__sign\":\"1470492196423,ecb100deddd9bcf45dc5450fdc199c294e3ffe7d\"}}";
+    OkHttpClient client = new OkHttpClient();
+    Request.Builder builder = this.getBasicTestRequestBuilder();
+    builder.url("http://localhost:3000/1.1/functions/_User/onLogin");
+    builder.post(RequestBody.create(MediaType.parse(getContentType()), content));
+    Response response = client.newCall(builder.build()).execute();
+    assertEquals(HttpServletResponse.SC_OK, response.code());
+    assertEquals("{}", response.body().string());
+  }
+
+  @Test
+  public void testOnLogin_error() throws IOException {
+    String content =
+        "{\"object\":{\"objectId\":\"576ccfbbd342d30057b6e5af\",\"username\":\"spamUser\","
+            + "\"__sign\":\"1470492196423,ecb100deddd9bcf45dc5450fdc199c294e3ffe7d\"}}";
+    OkHttpClient client = new OkHttpClient();
+    Request.Builder builder = this.getBasicTestRequestBuilder();
+    builder.url("http://localhost:3000/1.1/functions/_User/onLogin");
+    builder.post(RequestBody.create(MediaType.parse(getContentType()), content));
+    Response response = client.newCall(builder.build()).execute();
+    assertEquals(HttpServletResponse.SC_BAD_REQUEST, response.code());
+    assertEquals("{\"code\":400,\"error\":\"forbidden\"}", response.body().string());
   }
 
   @Test
