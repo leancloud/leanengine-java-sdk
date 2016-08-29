@@ -69,9 +69,10 @@ public abstract class EngineHandlerInfo {
     logger.debug("request body: {}", requestBody);
     Object returnValue = null;
     Object params = this.parseParams(requestBody);
-    returnValue = methodParameterList.size() == 0 ? handlerMethod.invoke(null)
-        : params.getClass().isArray() ? handlerMethod.invoke(null, (Object[]) params)
-            : handlerMethod.invoke(null, params);
+    returnValue =
+        methodParameterList.size() == 0 ? handlerMethod.invoke(null)
+            : params.getClass().isArray() ? handlerMethod.invoke(null, (Object[]) params)
+                : handlerMethod.invoke(null, params);
     returnValue = this.wrapperResponse(returnValue, requestBody, rpcCall);
     return returnValue;
   }
@@ -100,8 +101,8 @@ public abstract class EngineHandlerInfo {
       Annotation[] array = annotationMatrix[index];
       for (Annotation an : array) {
         if (an instanceof EngineFunctionParam) {
-          params.add(new EngineFunctionParamInfo(paramTypesArray[index],
-              ((EngineFunctionParam) an).value()));
+          params.add(new EngineFunctionParamInfo(paramTypesArray[index], ((EngineFunctionParam) an)
+              .value()));
         }
       }
     }
@@ -110,19 +111,19 @@ public abstract class EngineHandlerInfo {
 
   public static EngineHandlerInfo getEngineHandlerInfo(Method method, EngineHook hook) {
     List<EngineFunctionParamInfo> params = new LinkedList<EngineFunctionParamInfo>();
-    if ("_User".equals(hook.className()) || hook.type() == EngineHookType.onLogin) {
+    if ("_User".equals(hook.className()) && hook.type() != EngineHookType.onLogin) {
       params.add(new EngineFunctionParamInfo(AVUser.class, USER));
+    } else if (hook.type() == EngineHookType.onLogin) {
+      params.add(new EngineFunctionParamInfo(AVUser.class, OBJECT));
     } else {
       params.add(new EngineFunctionParamInfo(AVObject.class, OBJECT));
     }
     if (EngineHookType.beforeUpdate.equals(hook.type())) {
-      return new BeforeUpdateHookHandlerInfo(
-          EndpointParser.getInternalEndpoint(hook.className(), hook.type()), method, params, null,
-          hook.className());
+      return new BeforeUpdateHookHandlerInfo(EndpointParser.getInternalEndpoint(hook.className(),
+          hook.type()), method, params, null, hook.className());
     }
-    return new EngineHookHandlerInfo(
-        EndpointParser.getInternalEndpoint(hook.className(), hook.type()), method, params, null,
-        hook.className());
+    return new EngineHookHandlerInfo(EndpointParser.getInternalEndpoint(hook.className(),
+        hook.type()), method, params, null, hook.className());
   }
 
   public static EngineHandlerInfo getEngineHandlerInfo(Method method, IMHook hook) {

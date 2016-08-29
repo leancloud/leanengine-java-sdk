@@ -12,6 +12,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.junit.Test;
 
+import cn.leancloud.LeanEngine;
+
 import com.alibaba.fastjson.JSON;
 import com.avos.avoscloud.AVCloud;
 import com.avos.avoscloud.AVException;
@@ -23,8 +25,6 @@ import com.avos.avoscloud.okhttp.OkHttpClient;
 import com.avos.avoscloud.okhttp.Request;
 import com.avos.avoscloud.okhttp.RequestBody;
 import com.avos.avoscloud.okhttp.Response;
-
-import cn.leancloud.LeanEngine;
 
 public class EngineHookTest extends EngineBasicTest {
 
@@ -55,8 +55,8 @@ public class EngineHookTest extends EngineBasicTest {
     builder.post(RequestBody.create(MediaType.parse(getContentType()), content));
     Response response = client.newCall(builder.build()).execute();
     assertEquals(HttpServletResponse.SC_BAD_REQUEST, response.code());
-    assertEquals("{\"code\":400,\"error\":\"star should less than 50\"}",
-        new String(response.body().bytes()));
+    assertEquals("{\"code\":400,\"error\":\"star should less than 50\"}", new String(response
+        .body().bytes()));
   }
 
   @Test
@@ -70,7 +70,7 @@ public class EngineHookTest extends EngineBasicTest {
       u = AVUser.logIn("spamUser", "123123123");
     }
     Map<String, Object> params = new HashMap<String, Object>();
-    params.put("user", AVUtils.getParsedObject(u, true));
+    params.put("object", AVUtils.getParsedObject(u, true));
 
     try {
       AVCloud.callFunction("_User/onLogin", params);
