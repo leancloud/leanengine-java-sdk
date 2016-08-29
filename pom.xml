@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>cn.leancloud</groupId>
 	<artifactId>leanengine</artifactId>
-	<version>0.1.8</version>
+	<version>0.1.7</version>
 
 	<properties>
 		<jettyVersion>9.3.10.v20160621</jettyVersion>
