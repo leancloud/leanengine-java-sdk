@@ -10,8 +10,11 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.commons.codec.binary.Hex;
 
+import com.avos.avoscloud.AVOSServices;
+import com.avos.avoscloud.PaasClient;
 import com.avos.avoscloud.internal.InternalConfigurationController.Builder;
 import com.avos.avoscloud.internal.impl.EnginePersistenceImplementation;
+import com.avos.avoscloud.internal.impl.JavaAppConfiguration;
 import com.avos.avoscloud.internal.impl.JavaRequestSignImplementation;
 import com.avos.avoscloud.internal.impl.Log4j2Implementation;
 
@@ -162,6 +165,18 @@ public class LeanEngine {
 
   public static String getAppEnv() {
     return appConf.getAppEnv();
+  }
+
+  public static void useAVCloudUS() {
+    JavaAppConfiguration.instance().configureService(AVOSServices.STORAGE_SERVICE.toString(),
+        "https://us-api.leancloud.cn");
+    PaasClient.useAVCloudUS();
+  }
+
+  public static void useAVCloudCN() {
+    JavaAppConfiguration.instance().configureService(AVOSServices.STORAGE_SERVICE.toString(),
+        "https://api.leancloud.cn");
+    PaasClient.useAVCloudCN();
   }
 
 }
