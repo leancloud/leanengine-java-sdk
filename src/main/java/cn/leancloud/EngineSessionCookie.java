@@ -13,8 +13,8 @@ import com.avos.avoscloud.internal.impl.DefaultAVUserCookieSign;
 public class EngineSessionCookie {
   boolean fetchUser;
 
-  ThreadLocal<HttpServletResponse> responseHolder = new ThreadLocal<>();
-  ThreadLocal<HttpServletRequest> requestHolder = new ThreadLocal<>();
+  ThreadLocal<HttpServletResponse> responseHolder = new ThreadLocal<HttpServletResponse>();
+  ThreadLocal<HttpServletRequest> requestHolder = new ThreadLocal<HttpServletRequest>();
 
   AVUserCookieSign sign;
 
