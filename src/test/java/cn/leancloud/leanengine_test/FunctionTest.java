@@ -165,9 +165,9 @@ public class FunctionTest extends EngineBasicTest {
     cookieManager.setCookiePolicy(CookiePolicy.ACCEPT_ALL);
     client.setCookieHandler(cookieManager);
     Request.Builder builder = this.getBasicTestRequestBuilder();
-    List<String> values = new ArrayList<>(Arrays.asList("avos:sess=" + userCookie.getValue(),
+    List<String> values = new ArrayList<String>(Arrays.asList("avos:sess=" + userCookie.getValue(),
         "avos:sess.sig=" + cookieSign.getValue()));
-    Map<String, List<String>> cookies = new HashMap<>();
+    Map<String, List<String>> cookies = new HashMap<String, List<String>>();
     cookies.put("Set-Cookie", values);
     client.getCookieHandler().put(new URI("http://0.0.0.0:3000"), cookies);
 
