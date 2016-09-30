@@ -11,12 +11,12 @@ import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
-import cn.leancloud.AVUserCookieSign;
-
 import com.alibaba.fastjson.JSON;
 import com.avos.avoscloud.AVException;
 import com.avos.avoscloud.AVUser;
 import com.avos.avoscloud.AVUtils;
+
+import cn.leancloud.AVUserCookieSign;
 
 public class DefaultAVUserCookieSign implements AVUserCookieSign {
   private static final String SESSION_TOKEN = "_sessionToken";
@@ -40,7 +40,6 @@ public class DefaultAVUserCookieSign implements AVUserCookieSign {
     this.maxAge = maxAge;
   }
 
-  @Override
   public AVUser decodeUser(HttpServletRequest request) {
     Cookie cookie = getCookie(request, sessionKey);
     if (cookie != null) {
@@ -62,7 +61,6 @@ public class DefaultAVUserCookieSign implements AVUserCookieSign {
     return null;
   }
 
-  @Override
   public Cookie encodeUser(AVUser user) {
     if (user != null) {
       String cookieValue = getUserCookieValue(user);
@@ -78,7 +76,6 @@ public class DefaultAVUserCookieSign implements AVUserCookieSign {
     }
   }
 
-  @Override
   public Cookie getCookieSign(AVUser user) {
     Cookie cookie = new Cookie(sessionKey + ".sig", null);
     cookie.setPath("/");
@@ -99,7 +96,6 @@ public class DefaultAVUserCookieSign implements AVUserCookieSign {
     return cookie;
   }
 
-  @Override
   public boolean validateCookieSign(HttpServletRequest request) {
     Cookie userCookie = getCookie(request, sessionKey);
     Cookie cookieSign = getCookie(request, sessionKey + ".sig");
@@ -115,8 +111,8 @@ public class DefaultAVUserCookieSign implements AVUserCookieSign {
     return false;
   }
 
-  public static String encrypt(String secret, String text) throws NoSuchAlgorithmException,
-      InvalidKeyException {
+  public static String encrypt(String secret, String text)
+      throws NoSuchAlgorithmException, InvalidKeyException {
     SecretKeySpec signingKey = new SecretKeySpec(secret.getBytes(), HMAC_SHA1_ALGORITHM);
     Mac mac = Mac.getInstance(HMAC_SHA1_ALGORITHM);
     mac.init(signingKey);

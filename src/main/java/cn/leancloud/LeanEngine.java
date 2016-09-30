@@ -29,10 +29,8 @@ public class LeanEngine {
    * <p>
    * Authenticates this client as belonging to your application. This must be called before your
    * application can use the AVOSCloud library. The recommended way is to put a call to
-   * LeanEngine.initialize in each of your onCreate methods. An example:
+   * LeanEngine.initialize in each of your onCreate methods.
    * </p>
-   * 
-   * <pre>
    * 
    * @param applicationId The application id provided in the AVOSCloud dashboard.
    * @param clientKey The client key provided in the AVOSCloud dashboard.
@@ -53,7 +51,7 @@ public class LeanEngine {
   /**
    * 请在ServletContextListener.contextInitialized中注册所有的云函数定义类
    * 
-   * @param clazz
+   * @param clazz 需要注册的云函数定义类
    */
   public static void register(Class<?> clazz) {
     for (Method m : clazz.getDeclaredMethods()) {
@@ -91,7 +89,7 @@ public class LeanEngine {
   /**
    * 设置sessionCookie的实例
    * 
-   * @param sessionCookie
+   * @param sessionCookie sessionCookie
    */
 
   public static void addSessionCookie(EngineSessionCookie sessionCookie) {
@@ -105,16 +103,16 @@ public class LeanEngine {
   /**
    * 本方法用于本地调试期间，设置为 true 后所有的云函数调用都直接调用本地而非 LeanCloud 上已经部署的项目
    * 
-   * @param enabled
+   * @param enabled true 为调用本地云函数; false 为调用服务端云函数
    */
   public static void setLocalEngineCallEnabled(boolean enabled) {
     appConf.setLocalEngineCallEnabled(enabled);
   }
 
   /**
-   * 设置是否打开 https 自动跳转
+   * 设置是否打开 HTTPS 自动跳转
    * 
-   * @param enabled
+   * @param enabled true 为打开 HTTPS 自动跳转
    */
   public static void setHttpsRedirectEnabled(boolean enabled) {
     httpsRedirectionEnabled = enabled;
@@ -139,7 +137,7 @@ public class LeanEngine {
    * 
    * 使用 masterKey 时， API 将拥有全部权限，不再受到权限的限制
    * 
-   * @param useMasterKey
+   * @param useMasterKey true 为使用 masterKey 发送请求
    */
   public static void setUseMasterKey(boolean useMasterKey) {
     JavaRequestSignImplementation.instance().setUseMasterKey(useMasterKey);

@@ -9,6 +9,11 @@ import org.eclipse.jetty.servlet.ServletHandler;
 import org.junit.After;
 import org.junit.Before;
 
+import com.avos.avoscloud.AVOSCloud;
+import com.avos.avoscloud.AVObject;
+import com.avos.avoscloud.okhttp.OkHttpClient;
+import com.avos.avoscloud.okhttp.Request;
+
 import cn.leancloud.CloudCodeServlet;
 import cn.leancloud.EngineSessionCookie;
 import cn.leancloud.HttpsRequestRedirectFilter;
@@ -16,11 +21,6 @@ import cn.leancloud.LeanEngine;
 import cn.leancloud.LeanEngineHealthCheckServlet;
 import cn.leancloud.RequestUserAuthFilter;
 import cn.leancloud.leanengine_test.data.Todo;
-
-import com.avos.avoscloud.AVOSCloud;
-import com.avos.avoscloud.AVObject;
-import com.avos.avoscloud.okhttp.OkHttpClient;
-import com.avos.avoscloud.okhttp.Request;
 
 public class EngineBasicTest {
 
@@ -33,7 +33,7 @@ public class EngineBasicTest {
   @Before
   public void setUp() throws Exception {
     System.setProperty("LEANCLOUD_APP_PORT", "3000");
-    System.setProperty("LC_API_SERVER", "https://api.leancloud.cn");
+    System.setProperty("LEANCLOUD_API_SERVER", "https://api.leancloud.cn");
     AVObject.registerSubclass(Todo.class);
     LeanEngine.initialize("uu2P5gNTxGhjyaJGAPPnjCtJ-gzGzoHsz", "j5lErUd6q7LhPD8CXhfmA2Rg",
         "atXAmIVlQoBDBLqumMgzXhcY");

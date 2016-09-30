@@ -17,9 +17,9 @@ class EngineAppConfiguration extends JavaAppConfiguration {
     port = Integer.parseInt(getEnvOrProperty("LEANCLOUD_APP_PORT"));
 
     serviceHostMap.put(AVOSServices.STORAGE_SERVICE.toString(),
-        System.getProperty("LC_API_SERVER"));
+        System.getProperty("LEANCLOUD_API_SERVER"));
     serviceHostMap.put(AVOSServices.FUNCTION_SERVICE.toString(),
-        System.getProperty("LC_API_SERVER"));
+        System.getProperty("LEANCLOUD_API_SERVER"));
   }
 
   public void setLocalEngineCallEnabled(boolean enabled) {
@@ -27,7 +27,7 @@ class EngineAppConfiguration extends JavaAppConfiguration {
       serviceHostMap.put(AVOSServices.FUNCTION_SERVICE.toString(), "http://0.0.0.0:" + getPort());
     } else {
       serviceHostMap.put(AVOSServices.FUNCTION_SERVICE.toString(),
-          System.getProperty("LC_API_SERVER"));
+          System.getProperty("LEANCLOUD_API_SERVER"));
     }
   }
 
