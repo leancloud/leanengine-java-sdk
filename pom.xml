@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>cn.leancloud</groupId>
   <artifactId>leanengine</artifactId>
-  <version>0.1.10</version>
+  <version>0.1.11</version>
 
   <name>leancloud leanengine library</name>
   <description>leancloud leanengine library</description>
@@ -51,7 +51,7 @@
     <dependency>
       <groupId>cn.leancloud</groupId>
       <artifactId>java-sdk</artifactId>
-      <version>[0.1.3,0.2.0)</version>
+      <version>0.1.6</version>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
