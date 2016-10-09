@@ -26,7 +26,7 @@ public class EngineRequestContext {
   /**
    * 在 beforeUpdate 函数中调用可以查看 avobject 的哪些属性被更新了
    * 
-   * @return
+   * @return 被更新的属性
    */
   public static List<String> getUpdateKeys() {
     Map<String, Object> meta = getMeta();
@@ -37,9 +37,9 @@ public class EngineRequestContext {
   }
 
   /**
-   * 获取发起请求的 ip 地址
+   * 获取发起请求的 IP 地址
    * 
-   * @return
+   * @return 发起请求的 IP 地址
    */
   public static String getRemoteAddress() {
     Map<String, Object> meta = getMeta();
