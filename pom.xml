@@ -43,7 +43,7 @@
 
   <properties>
     <jettyVersion>9.3.10.v20160621</jettyVersion>
-    <jdk.version>1.8</jdk.version>
+    <jdk.version>1.6</jdk.version>
   </properties>
 
 

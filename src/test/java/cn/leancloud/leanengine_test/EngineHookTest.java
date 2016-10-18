@@ -219,4 +219,35 @@ public class EngineHookTest extends EngineBasicTest {
     assertEquals(HttpServletResponse.SC_OK, response.code());
   }
 
+  @Test
+  public void testUserBeforeSaveHook() throws IOException {
+    String content = "{" //
+        + "  \"object\": {" //
+        + "    \"username\": \"admin\"," //
+        + "    \"sessionToken\": \"z68j4zxkl0rbqmft1p1ci82vs\"," //
+        + "    \"mobilePhoneVerified\": false," //
+        + "    \"emailVerified\": false," //
+        + "    \"__before\": \"1476674356675,96e59638f8b2656a2159a4f00f06873fb4a5f1e4\"" //
+        + "  }," //
+        + "  \"user\": {" //
+        + "    \"sessionToken\": \"zpsy8zrk4uy8mkxg1k2ssouz1\"," //
+        + "    \"updatedAt\": \"2016-10-17T03:10:37.545Z\"," //
+        + "    \"objectId\": \"5804412da0bb9f00588c039e\"," //
+        + "    \"username\": \"testUser\"," //
+        + "    \"createdAt\": \"2016-10-17T03:10:37.545Z\"," //
+        + "    \"emailVerified\": false," //
+        + "    \"mobilePhoneVerified\": false" //
+        + "  }" //
+        + "}";
+    OkHttpClient client = new OkHttpClient();
+    Request.Builder builder = this.getBasicTestRequestBuilder();
+    builder.url("http://localhost:3000/1.1/functions/_User/beforeSave");
+    builder.post(RequestBody.create(MediaType.parse(getContentType()), content));
+    Response response = client.newCall(builder.build()).execute();
+    assertEquals(HttpServletResponse.SC_OK, response.code());
+    String body = new String(response.body().bytes());
+    assertTrue(body.indexOf("\"username\":\"admin\"") != -1);
+    assertTrue(body.indexOf("\"beforeSave\":[true]") != -1);
+  }
+
 }
