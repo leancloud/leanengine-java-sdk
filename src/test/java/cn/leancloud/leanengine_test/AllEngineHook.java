@@ -99,4 +99,12 @@ public class AllEngineHook {
     System.out.println(todo.getContent());
     return todo;
   }
+
+  @EngineHook(className = "_User", type = EngineHookType.beforeSave)
+  public static AVObject userBeforeSaveHook(AVObject user) throws Exception {
+    System.out.println("userBeforeSaveHook");
+    user.add("beforeSave", true);
+    return user;
+  }
+
 }

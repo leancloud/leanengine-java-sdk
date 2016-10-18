@@ -35,8 +35,7 @@ public class EngineBasicTest {
     System.setProperty("LEANCLOUD_APP_PORT", "3000");
     System.setProperty("LEANCLOUD_API_SERVER", "https://api.leancloud.cn");
     AVObject.registerSubclass(Todo.class);
-    LeanEngine.initialize("uu2P5gNTxGhjyaJGAPPnjCtJ-gzGzoHsz", "j5lErUd6q7LhPD8CXhfmA2Rg",
-        "atXAmIVlQoBDBLqumMgzXhcY");
+    LeanEngine.initialize(getAppId(), getAppKey(), getMasterKey());
     LeanEngine.setLocalEngineCallEnabled(true);
     LeanEngine.setUseMasterKey(true);
     LeanEngine.addSessionCookie(new EngineSessionCookie(secret, 160000, true));
