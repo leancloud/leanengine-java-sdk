@@ -111,13 +111,8 @@ public abstract class EngineHandlerInfo {
 
   public static EngineHandlerInfo getEngineHandlerInfo(Method method, EngineHook hook) {
     List<EngineFunctionParamInfo> params = new LinkedList<EngineFunctionParamInfo>();
-    if ("_User".equals(hook.className()) && hook.type() != EngineHookType.onLogin) {
-      params.add(new EngineFunctionParamInfo(AVUser.class, USER));
-    } else if (hook.type() == EngineHookType.onLogin) {
-      params.add(new EngineFunctionParamInfo(AVUser.class, OBJECT));
-    } else {
-      params.add(new EngineFunctionParamInfo(AVObject.class, OBJECT));
-    }
+    params.add(new EngineFunctionParamInfo("_User".equals(hook.className()) ? AVUser.class
+        : AVObject.class, OBJECT));
     if (EngineHookType.beforeUpdate.equals(hook.type())) {
       return new BeforeUpdateHookHandlerInfo(EndpointParser.getInternalEndpoint(hook.className(),
           hook.type()), method, params, null, hook.className());
