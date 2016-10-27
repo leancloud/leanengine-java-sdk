@@ -39,7 +39,7 @@ public class EngineHookHandlerInfo extends EngineHandlerInfo {
     Map<String, Object> hookParams = new HashMap<String, Object>();
     if (result != null) {
       Map<String, Object> objectMapping =
-          (Map<String, Object>) AVUtils.getParsedObject(result, true, true);
+          (Map<String, Object>) AVUtils.getParsedObject(result, true, true, false, true);
       objectMapping.remove("__type");
       objectMapping.remove("className");
       hookParams.putAll(objectMapping);
