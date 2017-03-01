@@ -81,7 +81,7 @@ public abstract class EngineHandlerInfo {
 
   public Object wrapperResponse(Object returnValue, String requestBody, boolean rpcCall) {
     JSONObject result = new JSONObject();
-    result.put("result", AVUtils.getParsedObject(returnValue, true, false, true, true));
+    result.put("result", AVUtils.getParsedObject(returnValue, true, false, true, true, true));
     if (!rpcCall) {
       return JSON.parse(ResponseUtil.filterResponse(result.toJSONString()));
     }
