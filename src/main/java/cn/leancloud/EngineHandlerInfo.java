@@ -94,15 +94,16 @@ public abstract class EngineHandlerInfo {
     List<EngineFunctionParamInfo> params = new LinkedList<EngineFunctionParamInfo>();
     Annotation[][] annotationMatrix = method.getParameterAnnotations();
     Class<?>[] paramTypesArray = method.getParameterTypes();
-    if (annotationMatrix.length != paramTypesArray.length) {
-      LogUtil.avlog.e("Parameters not annotated correctly for EngineFunction:" + functionName);
-    }
     for (int index = 0; index < paramTypesArray.length; index++) {
       Annotation[] array = annotationMatrix[index];
-      for (Annotation an : array) {
-        if (an instanceof EngineFunctionParam) {
-          params.add(new EngineFunctionParamInfo(paramTypesArray[index], ((EngineFunctionParam) an)
-              .value()));
+      if (array.length == 0) {
+        LogUtil.avlog.e("Parameters not annotated correctly for EngineFunction:" + functionName);
+      } else {
+        for (Annotation an : array) {
+          if (an instanceof EngineFunctionParam) {
+            params.add(new EngineFunctionParamInfo(paramTypesArray[index], ((EngineFunctionParam) an)
+                    .value()));
+          }
         }
       }
     }
