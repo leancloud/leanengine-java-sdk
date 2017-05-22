@@ -70,6 +70,14 @@ public class FunctionTest extends EngineBasicTest {
   }
 
   @Test
+  public void testHelloWithWrongParam() throws  Exception {
+    Map<String, Object> params = new HashMap<String, Object>();
+    params.put("name1ss", "张三");
+    Object result = AVCloud.callFunction("hello", params);
+    assertEquals("hello", result);
+  }
+
+  @Test
   public void testAVCloudFunction() throws Exception {
     Map<String, Object> params = new HashMap<String, Object>();
     params.put("ts", 123);
@@ -84,22 +92,28 @@ public class FunctionTest extends EngineBasicTest {
     registerUser.setUsername(AVUtils.getRandomString(10) + System.currentTimeMillis());
     registerUser.setPassword(AVUtils.getRandomString(10));
     registerUser.signUp();
-    AVUser u = AVCloud.rpcFunction("ping", 123);
+
+    Map<String, Object> params = new HashMap<String, Object>();
+    params.put("ts", 123);
+    AVUser u = AVCloud.rpcFunction("ping", params);
     assertEquals(registerUser.getObjectId(), (u.getObjectId()));
   }
 
   @Test
   public void testSimpleObject() throws Exception {
+    Map<String, AVObject> rpcTestMap = new HashMap<String, AVObject>();
+
     AVObject obj = new AVObject("rpcTest");
     obj.put("int", 12);
     obj.save();
+    rpcTestMap.put("obj", obj);
 
-    String result = AVCloud.rpcFunction("simpleObject", obj);
+    String result = AVCloud.rpcFunction("simpleObject", rpcTestMap);
     assertEquals("success", result);
 
     obj.put("int", 3000);
     obj.save();
-    result = AVCloud.rpcFunction("simpleObject", obj);
+    result = AVCloud.rpcFunction("simpleObject", rpcTestMap);
     assertEquals("failure", result);
   }
 

@@ -20,7 +20,11 @@ public class AllEngineFunctions {
 
   @EngineFunction
   public static String hello(@EngineFunctionParam("name") String name) {
-    return "hello " + name;
+    if (null != name) {
+      return "hello " + name;
+    } else {
+      return "hello";
+    }
   }
 
   @EngineFunction("ping")

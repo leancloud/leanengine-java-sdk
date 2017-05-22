@@ -18,35 +18,21 @@ public class EngineFunctionHandlerInfo extends EngineHandlerInfo {
     if (methodParameterList.size() == 0) {
       return null;
     } else {
-      Object[] params;
       try {
         Map jsonParams = JSON.parseObject(requestBody, Map.class);
-        params = new Object[methodParameterList.size()];
+        Object[] params = new Object[methodParameterList.size()];
         for (int index = 0; index < methodParameterList.size(); index++) {
           Object p = jsonParams.get(methodParameterList.get(index).name);
           if (p == null) {
-            throw new InvalidParameterException();
+            params[index] = null;
+          } else {
+            params[index] = methodParameterList.get(index).parseParams(JSON.toJSONString(p));
           }
-          params[index] = methodParameterList.get(index).parseParams(JSON.toJSONString(p));
         }
+        return params;
       } catch (Exception e) {
-        if (methodParameterList.size() == 1) {
-          // when
-          Object param = null;
-          try {
-            EngineFunctionParamInfo paramInfo = methodParameterList.get(0);
-            param = paramInfo.parseParams(requestBody);
-            // 这里是假设唯一的目标作为参数传递过来，而不是放在一个jsonObject中间
-            return param;
-          } catch (Exception e1) {
-            throw new InvalidParameterException();
-            // 如果解析出错了，就认为传递过来的是一个jsonObject可以按照多于1个参数的情况来解析
-          }
-        } else {
-          throw new InvalidParameterException();
-        }
+        throw new InvalidParameterException();
       }
-      return params;
     }
   }
 }
