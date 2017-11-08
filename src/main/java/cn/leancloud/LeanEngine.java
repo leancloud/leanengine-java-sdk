@@ -10,9 +10,10 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.commons.codec.binary.Hex;
 
-import com.avos.avoscloud.PaasClient;
+import com.avos.avoscloud.internal.InternalConfigurationController;
 import com.avos.avoscloud.internal.InternalConfigurationController.Builder;
 import com.avos.avoscloud.internal.impl.EnginePersistenceImplementation;
+import com.avos.avoscloud.internal.impl.EnvAppRouter;
 import com.avos.avoscloud.internal.impl.JavaRequestSignImplementation;
 import com.avos.avoscloud.internal.impl.Log4j2Implementation;
 
@@ -22,6 +23,8 @@ public class LeanEngine {
   static volatile boolean httpsRedirectionEnabled = false;
 
   static EngineAppConfiguration appConf;
+
+  private static EnvAppRouter appRouter;
 
   static final String JSON_CONTENT_TYPE = "application/json; charset=UTF-8";
 
@@ -38,10 +41,13 @@ public class LeanEngine {
    */
   public static void initialize(String applicationId, String clientKey, String masterKey) {
     appConf = new EngineAppConfiguration(applicationId, clientKey, masterKey);
+    appRouter = new EnvAppRouter(appConf);
     Builder builder = new Builder();
     builder.setInternalPersistence(EnginePersistenceImplementation.instance())
         .setInternalLogger(Log4j2Implementation.instance()).setAppConfiguration(appConf)
-        .setInternalRequestSign(JavaRequestSignImplementation.instance()).build();
+        .setInternalRequestSign(JavaRequestSignImplementation.instance())
+        .setAppRouter(appRouter).build();
+    InternalConfigurationController.globalInstance().getAppRouter().updateServerHosts();
   }
 
   private static Map<String, EngineHandlerInfo> funcs = new HashMap<String, EngineHandlerInfo>();
@@ -106,7 +112,8 @@ public class LeanEngine {
    * @param enabled true 为调用本地云函数; false 为调用服务端云函数
    */
   public static void setLocalEngineCallEnabled(boolean enabled) {
-    appConf.setLocalEngineCallEnabled(enabled);
+    appRouter.setLocalEngineCallEnabled(enabled);
+    InternalConfigurationController.globalInstance().getAppRouter().updateServerHosts();
   }
 
   /**
@@ -164,11 +171,11 @@ public class LeanEngine {
   }
 
   public static void useAVCloudUS() {
-    PaasClient.useAVCloudUS();
+    appConf.setIsCN(false);
   }
 
   public static void useAVCloudCN() {
-    PaasClient.useAVCloudCN();
+    appConf.setIsCN(true);
   }
 
 }
