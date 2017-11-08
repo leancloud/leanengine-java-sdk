@@ -1,9 +1,8 @@
 package cn.leancloud;
 
-import com.avos.avoscloud.AVOSServices;
 import com.avos.avoscloud.internal.impl.JavaAppConfiguration;
 
-class EngineAppConfiguration extends JavaAppConfiguration {
+public class EngineAppConfiguration extends JavaAppConfiguration {
 
   private final String appEnv;
 
@@ -15,20 +14,6 @@ class EngineAppConfiguration extends JavaAppConfiguration {
     setMasterKey(masterKey);
     appEnv = getEnvOrProperty("LEANCLOUD_APP_ENV");
     port = Integer.parseInt(getEnvOrProperty("LEANCLOUD_APP_PORT"));
-
-    serviceHostMap.put(AVOSServices.STORAGE_SERVICE.toString(),
-        System.getProperty("LEANCLOUD_API_SERVER"));
-    serviceHostMap.put(AVOSServices.FUNCTION_SERVICE.toString(),
-        System.getProperty("LEANCLOUD_API_SERVER"));
-  }
-
-  public void setLocalEngineCallEnabled(boolean enabled) {
-    if (enabled) {
-      serviceHostMap.put(AVOSServices.FUNCTION_SERVICE.toString(), "http://0.0.0.0:" + getPort());
-    } else {
-      serviceHostMap.put(AVOSServices.FUNCTION_SERVICE.toString(),
-          System.getProperty("LEANCLOUD_API_SERVER"));
-    }
   }
 
   public String getAppEnv() {
@@ -39,12 +24,5 @@ class EngineAppConfiguration extends JavaAppConfiguration {
     return port;
   }
 
-  private String getEnvOrProperty(String key) {
-    String value = System.getenv(key);
-    if (value == null) {
-      value = System.getProperty(key);
-    }
-    return value;
-  }
 
 }
