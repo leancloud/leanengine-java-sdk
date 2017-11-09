@@ -1,14 +1,16 @@
 package cn.leancloud.leanengine_test;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.IOException;
 
 import org.junit.Test;
 
-import cn.leancloud.LeanEngine;
-
 import com.avos.avoscloud.okhttp.OkHttpClient;
 import com.avos.avoscloud.okhttp.Request;
 import com.avos.avoscloud.okhttp.Response;
+
+import cn.leancloud.LeanEngine;
 
 public class RedirectionTest extends EngineBasicTest {
 
@@ -31,7 +33,7 @@ public class RedirectionTest extends EngineBasicTest {
     builder.get();
 
     Response response = client.newCall(builder.build()).execute();
-    System.out.println(response.code());
+    assertEquals(302, response.code());
   }
 
   @Override

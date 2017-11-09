@@ -40,7 +40,7 @@ public class LeanEngine {
    * @param masterKey The master key provided in the AVOSCloud dashboard.
    */
   public static void initialize(String applicationId, String clientKey, String masterKey) {
-    appConf = new EngineAppConfiguration(applicationId, clientKey, masterKey);
+    appConf = EngineAppConfiguration.instance(applicationId, clientKey, masterKey);
     appRouter = new EnvAppRouter(appConf);
     Builder builder = new Builder();
     builder.setInternalPersistence(EnginePersistenceImplementation.instance())
