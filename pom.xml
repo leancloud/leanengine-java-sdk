@@ -27,7 +27,7 @@
 
   <scm>
       <connection>scm:git:git://github.com/leancloud/leanengine-java-sdk.git</connection>
-      <developerConnection>scm:git:ssh://github.com:leancloud/leanengine-java-sdk.git</developerConnection>
+      <developerConnection>scm:git:git://github.com:leancloud/leanengine-java-sdk.git</developerConnection>
       <url>http://github.com/leancloud/leanengine-java-sdk/tree/master</url>
   </scm>
   <distributionManagement>
