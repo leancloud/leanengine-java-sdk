@@ -43,7 +43,8 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <jdk.version>1.6</jdk.version>
+    <maven.compiler.source>1.7</maven.compiler.source>
+    <maven.compiler.target>1.7</maven.compiler.target>
     <jettyVersion>9.3.10.v20160621</jettyVersion>
   </properties>
 
