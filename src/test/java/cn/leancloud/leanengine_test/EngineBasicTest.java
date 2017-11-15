@@ -33,7 +33,6 @@ public class EngineBasicTest {
   @Before
   public void setUp() throws Exception {
     System.setProperty("LEANCLOUD_APP_PORT", "3000");
-    System.setProperty("LEANCLOUD_API_SERVER", "https://api.leancloud.cn");
     AVObject.registerSubclass(Todo.class);
     LeanEngine.initialize(getAppId(), getAppKey(), getMasterKey());
     LeanEngine.setLocalEngineCallEnabled(true);
@@ -71,15 +70,15 @@ public class EngineBasicTest {
   }
 
   protected String getAppId() {
-    return "uu2P5gNTxGhjyaJGAPPnjCtJ-gzGzoHsz";
+    return "4h2h4okwiyn8b6cle0oig00vitayum8ephrlsvg7xo8o19ne";
   }
 
   protected String getAppKey() {
-    return "j5lErUd6q7LhPD8CXhfmA2Rg";
+    return "3xjj1qw91cr3ygjq9lt0g8c3qpet38rrxtwmmp0yffyoy2t4";
   }
 
   protected String getMasterKey() {
-    return "atXAmIVlQoBDBLqumMgzXhcY";
+    return "3v7z633lzfec9qzx8sjql6zimvdpmtwypcchr2gelu5mrzb0";
   }
 
   protected String getContentType() {

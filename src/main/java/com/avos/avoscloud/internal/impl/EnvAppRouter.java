@@ -23,13 +23,17 @@ public class EnvAppRouter extends AppRouter {
   protected void fetchServerHosts(boolean sync,
       final FunctionCallback<Map<AVOSServices, String>> cb) {
     Map<AVOSServices, String> result = new HashMap<AVOSServices, String>();
-    String appEnv = appConf.getAppEnv();
-    if ("stage".equals(appEnv) || "production".equals(appEnv)) {
-      result.put(AVOSServices.API, System.getProperty("LEANCLOUD_API_SERVER"));
-      result.put(AVOSServices.PUSH, System.getProperty("LEANCLOUD_API_SERVER"));
-      result.put(AVOSServices.RTM, System.getProperty("LEANCLOUD_API_SERVER"));
-      result.put(AVOSServices.ENGINE, System.getProperty("LEANCLOUD_API_SERVER"));
-      result.put(AVOSServices.STATS, System.getProperty("LEANCLOUD_API_SERVER"));
+    String apiServer = appConf.getEnvOrProperty("LEANCLOUD_API_SERVER");
+    if (apiServer != null) {
+      result.put(AVOSServices.API, apiServer);
+      result.put(AVOSServices.PUSH, apiServer);
+      result.put(AVOSServices.RTM, apiServer);
+      if (isLocalEngineCall) {
+        result.put(AVOSServices.ENGINE, "http://0.0.0.0:" + appConf.getPort());
+      } else {
+        result.put(AVOSServices.ENGINE, apiServer);
+      }
+      result.put(AVOSServices.STATS, apiServer);
       cb.done(result, null);
       return;
     }
