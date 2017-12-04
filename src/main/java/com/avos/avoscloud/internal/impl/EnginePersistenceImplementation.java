@@ -1,8 +1,8 @@
 package com.avos.avoscloud.internal.impl;
 
-import cn.leancloud.LeanEngine;
-
 import com.avos.avoscloud.AVUser;
+
+import cn.leancloud.LeanEngine;
 
 public class EnginePersistenceImplementation extends SimplePersistence {
 
@@ -20,7 +20,7 @@ public class EnginePersistenceImplementation extends SimplePersistence {
   }
 
   private static EnginePersistenceImplementation instance;
-  private ThreadLocal<AVUser> currentUser = new ThreadLocal<AVUser>();
+  private ThreadLocal<AVUser> currentUser = new InheritableThreadLocal<AVUser>();
 
   @Override
   public void setCurrentUser(AVUser user, boolean clean) {
