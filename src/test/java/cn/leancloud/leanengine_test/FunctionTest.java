@@ -7,8 +7,10 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.net.CookieManager;
 import java.net.CookiePolicy;
+import java.net.InetAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -224,5 +226,12 @@ public class FunctionTest extends EngineBasicTest {
     response = client.newCall(request).execute();
     String responseStr = new String(response.body().bytes());
     assertEquals("{\"result\":null}", responseStr);
+  }
+
+  @Test
+  public void testRemoteAddress() throws AVException, UnknownHostException {
+    InetAddress ip = InetAddress.getLocalHost();
+    String address = AVCloud.callFunction("remoteAddress", null);
+    assertEquals(ip.getHostAddress(), address);
   }
 }
