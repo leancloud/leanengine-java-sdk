@@ -10,6 +10,7 @@ import com.avos.avoscloud.AVUser;
 
 import cn.leancloud.EngineFunction;
 import cn.leancloud.EngineFunctionParam;
+import cn.leancloud.EngineRequestContext;
 
 public class AllEngineFunctions {
 
@@ -64,5 +65,10 @@ public class AllEngineFunctions {
   @EngineFunction("cookieTest")
   public static AVUser cookieTest() throws AVException {
     return AVUser.getCurrentUser();
+  }
+
+  @EngineFunction("remoteAddress")
+  public static String remoteAddress() throws AVException {
+    return EngineRequestContext.getRemoteAddress();
   }
 }

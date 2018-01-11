@@ -43,7 +43,7 @@ public class EngineRequestContext {
    */
   public static String getRemoteAddress() {
     Map<String, Object> meta = getMeta();
-    if (meta != null && meta.containsKey(UPDATED_KEYS)) {
+    if (meta != null && meta.containsKey(REMOTE_ADDRESS)) {
       return (String) meta.get(REMOTE_ADDRESS);
     }
     return null;
