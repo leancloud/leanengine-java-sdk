@@ -83,14 +83,18 @@ public class CloudCodeServlet extends HttpServlet {
         if (internalEndpoint.isNeedResponse()) {
           resp.setContentType(LeanEngine.JSON_CONTENT_TYPE);
           JSONObject result = new JSONObject();
-          result.put("code",
-              e.getCause() instanceof AVException ? ((AVException) e.getCause()).getCode() : 1);
-          result.put("error", e.getCause() != null ? e.getCause().getMessage() : e.getMessage());
-          resp.setStatus(400);
+          if (e.getCause() instanceof AVException) {
+            AVException ave = (AVException) e.getCause();
+            result.put("code", ave.getCode());
+            result.put("error", ave.getMessage());
+            resp.setStatus(400);
+          } else {
+            e.printStackTrace();
+            result.put("code", 1);
+            result.put("error", e.getCause() != null ? e.getCause().getMessage() : e.getMessage());
+            resp.setStatus(500);
+          }
           resp.getWriter().write(result.toJSONString());
-        }
-        if (AVOSCloud.isDebugLogEnabled()) {
-          e.printStackTrace();
         }
       }
     }
