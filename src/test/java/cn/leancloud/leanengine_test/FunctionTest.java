@@ -1,9 +1,5 @@
 package cn.leancloud.leanengine_test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 import java.io.IOException;
 import java.net.CookieManager;
 import java.net.CookiePolicy;
@@ -39,6 +35,8 @@ import com.avos.avoscloud.okhttp.Response;
 import com.avos.avoscloud.okio.BufferedSink;
 
 import cn.leancloud.LeanEngine;
+
+import static org.junit.Assert.*;
 
 public class FunctionTest extends EngineBasicTest {
 
@@ -233,5 +231,38 @@ public class FunctionTest extends EngineBasicTest {
     InetAddress ip = InetAddress.getLocalHost();
     String address = AVCloud.callFunction("remoteAddress", null);
     assertEquals(ip.getHostAddress(), address);
+  }
+
+  @Test
+  public void testErrorCode() throws AVException {
+    try {
+      Map<String, Object> result = AVCloud.callFunction("errorCode", null);
+      fail();
+    } catch (AVException e) {
+      assertEquals(211, e.getCode());
+      assertEquals("Could not find user.", e.getMessage());
+    }
+  }
+
+  @Test
+  public void testCustomErrorCode() throws AVException {
+    try {
+      Map<String, Object> result = AVCloud.callFunction("customErrorCode", null);
+      fail();
+    } catch (AVException e) {
+      assertEquals(123, e.getCode());
+      assertEquals("custom error message", e.getMessage());
+    }
+  }
+
+  @Test
+  public void testUncaughtError() throws AVException {
+    try {
+      Map<String, Object> result = AVCloud.callFunction("uncaughtError", null);
+      fail();
+    } catch(AVException e) {
+      assertEquals(1, e.getCode());
+      assertEquals("Index: 0, Size: 0", e.getMessage());
+    }
   }
 }

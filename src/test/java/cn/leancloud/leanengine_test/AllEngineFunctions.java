@@ -1,5 +1,6 @@
 package cn.leancloud.leanengine_test;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -71,4 +72,20 @@ public class AllEngineFunctions {
   public static String remoteAddress() throws AVException {
     return EngineRequestContext.getRemoteAddress();
   }
+
+  @EngineFunction()
+  public static AVUser errorCode() throws AVException {
+    return AVUser.logIn("NoThisUser", "lalala");
+  }
+
+  @EngineFunction()
+  public static String customErrorCode() throws AVException {
+    throw new AVException(123,"custom error message");
+  }
+
+  @EngineFunction()
+  public static String uncaughtError() {
+    return new ArrayList<String>().get(0);
+  }
+
 }
