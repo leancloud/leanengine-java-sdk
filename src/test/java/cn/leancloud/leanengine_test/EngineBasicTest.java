@@ -46,6 +46,7 @@ public class EngineBasicTest {
     handler.addServletWithMapping(LeanEngineHealthCheckServlet.class, "/__engine/1/ping");
     handler.addServletWithMapping(CloudCodeServlet.class, "/1.1/functions/*");
     handler.addServletWithMapping(CloudCodeServlet.class, "/1.1/call/*");
+    handler.addServletWithMapping(HelloServlet.class, "/hello");
 
     handler.addFilterWithMapping(HttpsRequestRedirectFilter.class, "/*",
         EnumSet.of(DispatcherType.INCLUDE, DispatcherType.REQUEST));
