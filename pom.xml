@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>cn.leancloud</groupId>
   <artifactId>leanengine</artifactId>
-  <version>0.2.6</version>
+  <version>0.2.7-SNAPSHOT</version>
 
   <name>leancloud leanengine library</name>
   <description>leancloud leanengine library</description>
@@ -28,7 +28,7 @@
       <connection>scm:git:git://github.com/leancloud/leanengine-java-sdk.git</connection>
       <developerConnection>scm:git:git@github.com:leancloud/leanengine-java-sdk.git</developerConnection>
       <url>http://github.com/leancloud/leanengine-java-sdk/tree/master</url>
-    <tag>v0.2.6</tag>
+    <tag>HEAD</tag>
   </scm>
   <distributionManagement>
     <snapshotRepository>
