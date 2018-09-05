@@ -29,7 +29,11 @@ public class HttpsRequestRedirectFilter implements Filter {
         boolean isProduction = "production".equals(LeanEngine.getAppEnv().toLowerCase());
         boolean isSubLeanAppDomain = host != null && (host.endsWith("leanapp.cn") || host.endsWith("avosapps.us"));
         boolean isHttps = "https".equals(protocol);
-        if ((isProduction || isSubLeanAppDomain) && !isHttps) {
+        boolean isCloudFuncUrl = path.startsWith("/1/functions/")
+            || path.startsWith("/1/call/")
+            || path.startsWith("/1.1/functions/")
+            || path.startsWith("/1.1/call/");
+        if ((isProduction || isSubLeanAppDomain) && !isHttps && !isCloudFuncUrl) {
           ((HttpServletResponse) response).sendRedirect("https://" + host + path);
           return;
         }
