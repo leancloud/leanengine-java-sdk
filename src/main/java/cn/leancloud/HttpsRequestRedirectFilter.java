@@ -26,8 +26,10 @@ public class HttpsRequestRedirectFilter implements Filter {
         String host = req.getHeader("host");
         String protocol = req.getHeader("x-forwarded-proto");
         String path = req.getRequestURI();
-        if ("production".equals(LeanEngine.getAppEnv().toLowerCase()) && host != null
-            && host.endsWith("leanapp.cn") && !"https".equals(protocol)) {
+        boolean isProduction = "production".equals(LeanEngine.getAppEnv().toLowerCase());
+        boolean isSubLeanAppDomain = host != null && (host.endsWith("leanapp.cn") || host.endsWith("avosapps.us"));
+        boolean isHttps = "https".equals(protocol);
+        if ((isProduction || isSubLeanAppDomain) && !isHttps) {
           ((HttpServletResponse) response).sendRedirect("https://" + host + path);
           return;
         }
