@@ -1,40 +1,20 @@
 package cn.leancloud.leanengine_test;
 
-import java.io.IOException;
-import java.net.CookieManager;
-import java.net.CookiePolicy;
-import java.net.InetAddress;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletResponse;
-
+import cn.leancloud.LeanEngine;
+import com.alibaba.fastjson.JSON;
+import com.avos.avoscloud.*;
+import com.avos.avoscloud.internal.impl.DefaultAVUserCookieSign;
+import com.avos.avoscloud.okhttp.*;
+import com.avos.avoscloud.okio.BufferedSink;
 import org.eclipse.jetty.server.Server;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.avos.avoscloud.AVCloud;
-import com.avos.avoscloud.AVException;
-import com.avos.avoscloud.AVOSCloud;
-import com.avos.avoscloud.AVObject;
-import com.avos.avoscloud.AVUser;
-import com.avos.avoscloud.AVUtils;
-import com.avos.avoscloud.internal.impl.DefaultAVUserCookieSign;
-import com.avos.avoscloud.okhttp.MediaType;
-import com.avos.avoscloud.okhttp.OkHttpClient;
-import com.avos.avoscloud.okhttp.Request;
-import com.avos.avoscloud.okhttp.RequestBody;
-import com.avos.avoscloud.okhttp.Response;
-import com.avos.avoscloud.okio.BufferedSink;
-
-import cn.leancloud.LeanEngine;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.net.*;
+import java.util.*;
 
 import static org.junit.Assert.*;
 
@@ -158,6 +138,19 @@ public class FunctionTest extends EngineBasicTest {
   }
 
   @Test
+  public void testGetCurrentUserInfo() {
+    Map<String, Object> result = run("currentUserInfo", null, "0hgr13u12tmgyv4x594682sv5");
+    assertTrue(result.containsKey("objectId"));
+    assertTrue(result.containsValue("zhangsan"));
+
+    result = run("currentUserInfo", null, null);
+    assertTrue(result.isEmpty());
+
+    result = run("currentUserInfo", null, "invalidSessionToken");
+    assertTrue(result.isEmpty());
+  }
+
+  @Test
   public void testCookieUser() throws AVException, URISyntaxException, IOException {
     AVOSCloud.initialize("uu2P5gNTxGhjyaJGAPPnjCtJ-gzGzoHsz", "j5lErUd6q7LhPD8CXhfmA2Rg",
         "atXAmIVlQoBDBLqumMgzXhcY");
@@ -187,18 +180,7 @@ public class FunctionTest extends EngineBasicTest {
 
     ((CookieManager) client.getCookieHandler()).put(new URI("http://0.0.0.0:3000"), cookies);
     builder.url("http://0.0.0.0:3000/1.1/call/cookieTest");
-    builder.post(new RequestBody() {
-
-      @Override
-      public void writeTo(BufferedSink sink) throws IOException {
-
-      }
-
-      @Override
-      public MediaType contentType() {
-        return null;
-      }
-    });
+    builder.post(new EmptyRequestBody());
     Request request = builder.build();
     Response response = client.newCall(request).execute();
     AVUser returnUser =
@@ -208,18 +190,7 @@ public class FunctionTest extends EngineBasicTest {
     client.setCookieHandler(null);
     builder = this.getBasicTestRequestBuilder();
     builder.url("http://0.0.0.0:3000/1.1/call/cookieTest");
-    builder.post(new RequestBody() {
-
-      @Override
-      public void writeTo(BufferedSink sink) throws IOException {
-
-      }
-
-      @Override
-      public MediaType contentType() {
-        return null;
-      }
-    });
+    builder.post(new EmptyRequestBody());
     request = builder.build();
     response = client.newCall(request).execute();
     String responseStr = new String(response.body().bytes());
@@ -227,10 +198,33 @@ public class FunctionTest extends EngineBasicTest {
   }
 
   @Test
-  public void testRemoteAddress() throws AVException, UnknownHostException {
-    InetAddress ip = InetAddress.getLocalHost();
-    String address = AVCloud.callFunction("remoteAddress", null);
-    assertEquals(ip.getHostAddress(), address);
+  public void testMetadata() throws AVException, IOException {
+    Map<String, Object> result = run("metadata", null, "mySessionToken");
+    assertTrue(result.containsKey("remoteAddress"));
+    assertEquals("mySessionToken", result.get("sessionToken"));
+
+    result = run("metadata", null, null);
+    assertNull(result.get("sessionToken"));
+  }
+
+  private Map<String, Object> run(String funcName, Map<String, Object> params, String sessionToken) {
+    try {
+      Request.Builder builder = new Request.Builder();
+      builder.url("http://localhost:3000/1.1/functions/" + funcName);
+      builder.header("x-lc-id", getAppId());
+      builder.header("x-lc-key", getAppKey());
+      if (sessionToken != null) {
+        builder.header("x-lc-session", sessionToken);
+      }
+      builder.post(new EmptyRequestBody());
+      Response response = client.newCall(builder.build()).execute();
+      assertEquals(HttpServletResponse.SC_OK, response.code());
+      String body = new String(response.body().bytes());
+      Map<String, Object> result =  JSON.parseObject(body, Map.class);
+      return (Map<String, Object>) result.get("result");
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   @Test
@@ -264,5 +258,18 @@ public class FunctionTest extends EngineBasicTest {
       assertEquals(1, e.getCode());
       assertEquals("Index: 0, Size: 0", e.getMessage());
     }
+  }
+}
+
+class EmptyRequestBody extends RequestBody {
+
+  @Override
+  public void writeTo(BufferedSink sink) throws IOException {
+
+  }
+
+  @Override
+  public MediaType contentType() {
+    return null;
   }
 }

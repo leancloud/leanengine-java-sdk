@@ -88,6 +88,7 @@ class RequestAuth {
       if (AVUtils.isBlankString(remoteAddress)) {
         remoteAddress = req.getRemoteAddr();
       }
+      EngineRequestContext.setSessionToken(sessionToken);
       EngineRequestContext.setRemoteAddress(remoteAddress);
     }
   }
