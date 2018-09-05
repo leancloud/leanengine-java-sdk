@@ -4,6 +4,7 @@ import java.util.EnumSet;
 
 import javax.servlet.DispatcherType;
 
+import cn.leancloud.*;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletHandler;
 import org.junit.After;
@@ -14,12 +15,6 @@ import com.avos.avoscloud.AVObject;
 import com.avos.avoscloud.okhttp.OkHttpClient;
 import com.avos.avoscloud.okhttp.Request;
 
-import cn.leancloud.CloudCodeServlet;
-import cn.leancloud.EngineSessionCookie;
-import cn.leancloud.HttpsRequestRedirectFilter;
-import cn.leancloud.LeanEngine;
-import cn.leancloud.LeanEngineHealthCheckServlet;
-import cn.leancloud.RequestUserAuthFilter;
 import cn.leancloud.leanengine_test.data.Todo;
 
 public class EngineBasicTest {
@@ -46,6 +41,7 @@ public class EngineBasicTest {
     handler.addServletWithMapping(LeanEngineHealthCheckServlet.class, "/__engine/1/ping");
     handler.addServletWithMapping(CloudCodeServlet.class, "/1.1/functions/*");
     handler.addServletWithMapping(CloudCodeServlet.class, "/1.1/call/*");
+    handler.addServletWithMapping(LeanEngineMetadataServlet.class, "/1.1/functions/_ops/metadatas");
     handler.addServletWithMapping(HelloServlet.class, "/hello");
 
     handler.addFilterWithMapping(HttpsRequestRedirectFilter.class, "/*",
