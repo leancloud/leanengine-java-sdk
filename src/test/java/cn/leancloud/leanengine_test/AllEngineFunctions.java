@@ -63,6 +63,19 @@ public class AllEngineFunctions {
     return result;
   }
 
+  @EngineFunction("currentUserInfo")
+  public static Map<String, Object> getCurrentUserInfo() {
+    Map<String, Object> result = new HashMap<>();
+    AVUser user = AVUser.getCurrentUser();
+    if (user == null) {
+      return result;
+    }
+    result.put("objectId", user.getObjectId());
+    result.put("username", user.getUsername());
+    result.put("sessionToken", user.getSessionToken());
+    return result;
+  }
+
   @EngineFunction("cookieTest")
   public static AVUser cookieTest() throws AVException {
     return AVUser.getCurrentUser();
@@ -71,6 +84,14 @@ public class AllEngineFunctions {
   @EngineFunction("remoteAddress")
   public static String remoteAddress() throws AVException {
     return EngineRequestContext.getRemoteAddress();
+  }
+
+  @EngineFunction("metadata")
+  public static Map<String, Object> getMetadata() {
+    Map<String, Object> result = new HashMap<>();
+    result.put("remoteAddress", EngineRequestContext.getRemoteAddress());
+    result.put("sessionToken", EngineRequestContext.getSessionToken());
+    return result;
   }
 
   @EngineFunction()

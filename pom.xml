@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>cn.leancloud</groupId>
   <artifactId>leanengine</artifactId>
-  <version>0.2.7-SNAPSHOT</version>
+  <version>0.3.0-SNAPSHOT</version>
 
   <name>leancloud leanengine library</name>
   <description>leancloud leanengine library</description>
