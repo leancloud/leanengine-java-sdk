@@ -31,7 +31,6 @@ public enum EngineHookType {
   onVerifiedSMS("__on_verified_sms", false),
   /**
    * 当用户通过邮箱验证时，对该用户执行特定操作
-   * 
    */
   onVerifiedEmail("__on_verified_email", false),
   /**

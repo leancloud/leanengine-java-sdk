@@ -1,16 +1,15 @@
 package cn.leancloud.leanengine_test;
 
-import java.util.List;
-
+import cn.leancloud.EngineHook;
+import cn.leancloud.EngineHookType;
+import cn.leancloud.EngineRequestContext;
+import cn.leancloud.leanengine_test.data.Todo;
 import com.avos.avoscloud.AVException;
 import com.avos.avoscloud.AVObject;
 import com.avos.avoscloud.AVUser;
 import com.avos.avoscloud.AVUtils;
 
-import cn.leancloud.EngineHook;
-import cn.leancloud.EngineHookType;
-import cn.leancloud.EngineRequestContext;
-import cn.leancloud.leanengine_test.data.Todo;
+import java.util.List;
 
 public class AllEngineHook {
 
@@ -96,7 +95,7 @@ public class AllEngineHook {
 
   @EngineHook(className = "Todo", type = EngineHookType.beforeSave)
   public static Todo testSubObjectHook(Todo todo) throws Exception {
-    System.out.println(todo.getContent());
+    todo.setAuthor(AVUser.getCurrentUser());
     return todo;
   }
 

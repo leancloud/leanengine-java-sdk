@@ -1,16 +1,16 @@
 package cn.leancloud;
 
+import com.alibaba.fastjson.JSON;
+
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 
-import com.alibaba.fastjson.JSON;
-
 public class BeforeUpdateHookHandlerInfo extends EngineHookHandlerInfo {
 
   public BeforeUpdateHookHandlerInfo(String endpoint, Method handlerMethod,
-      List<EngineFunctionParamInfo> params, Class returnType, String hookClass) {
-    super(endpoint, handlerMethod, params, returnType, hookClass);
+                                     List<EngineFunctionParamInfo> params, Class returnType, String hookKey, String hookClass) {
+    super(endpoint, handlerMethod, params, returnType, hookKey, hookClass);
   }
 
   @Override

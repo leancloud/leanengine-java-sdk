@@ -1,5 +1,15 @@
 package cn.leancloud;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.avos.avoscloud.AVObject;
+import com.avos.avoscloud.AVUser;
+import com.avos.avoscloud.AVUtils;
+import com.avos.avoscloud.LogUtil;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import javax.servlet.http.HttpServletRequest;
 import java.io.BufferedReader;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -7,36 +17,24 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.avos.avoscloud.AVObject;
-import com.avos.avoscloud.AVUser;
-import com.avos.avoscloud.AVUtils;
-import com.avos.avoscloud.LogUtil;
-
 public abstract class EngineHandlerInfo {
 
   private static final Logger logger = LogManager.getLogger(EngineHandlerInfo.class);
 
   static final String OBJECT = "object";
-  static final String USER = "user";
 
   public EngineHandlerInfo(String endpoint, Method handlerMethod,
-      List<EngineFunctionParamInfo> params, Class<?> returnType) {
-    this(endpoint, handlerMethod, params, returnType, null);
+                           List<EngineFunctionParamInfo> params, Class<?> returnType, String hookKey) {
+    this(endpoint, handlerMethod, params, returnType, hookKey, null);
   }
 
   public EngineHandlerInfo(String endpoint, Method handlerMethod,
-      List<EngineFunctionParamInfo> params, Class<?> returnType, String hookClass) {
+                           List<EngineFunctionParamInfo> params, Class<?> returnType, String hookKey, String hookClass) {
     this.handlerMethod = handlerMethod;
     this.endPoint = endpoint;
     this.methodParameterList = params;
     this.returnType = returnType;
+    this.hookKey = hookKey;
     this.hookClass = hookClass;
   }
 
@@ -44,21 +42,18 @@ public abstract class EngineHandlerInfo {
   final String endPoint;
   final List<EngineFunctionParamInfo> methodParameterList;
   final Class<?> returnType;
+  final String hookKey;
   final String hookClass;
-
-  public Method getHandlerMethod() {
-    return handlerMethod;
-  }
 
   public String getEndPoint() {
     return endPoint;
   }
 
-  public List<EngineFunctionParamInfo> getParamList() {
-    return methodParameterList;
-  }
-
   public Object execute(HttpServletRequest request, boolean rpcCall) throws Exception {
+    if (hookKey != null && !hookKey.equals(AuthFilter.getAuthInfo(request).hookKey)) {
+      throw new UnauthException();
+    }
+
     StringBuilder sb = new StringBuilder();
     String line = null;
     BufferedReader reader = request.getReader();
@@ -72,12 +67,12 @@ public abstract class EngineHandlerInfo {
     returnValue =
         methodParameterList.size() == 0 ? handlerMethod.invoke(null)
             : params.getClass().isArray() ? handlerMethod.invoke(null, (Object[]) params)
-                : handlerMethod.invoke(null, params);
+            : handlerMethod.invoke(null, params);
     returnValue = this.wrapperResponse(returnValue, requestBody, rpcCall);
     return returnValue;
   }
 
-  public abstract Object parseParams(String requestBody) throws InvalidParameterException;
+  public abstract Object parseParams(String requestBody);
 
   public Object wrapperResponse(Object returnValue, String requestBody, boolean rpcCall) {
     JSONObject result = new JSONObject();
@@ -102,7 +97,7 @@ public abstract class EngineHandlerInfo {
         for (Annotation an : array) {
           if (an instanceof EngineFunctionParam) {
             params.add(new EngineFunctionParamInfo(paramTypesArray[index], ((EngineFunctionParam) an)
-                    .value()));
+                .value()));
           }
         }
       }
@@ -110,21 +105,21 @@ public abstract class EngineHandlerInfo {
     return new EngineFunctionHandlerInfo(functionName, method, params, method.getReturnType());
   }
 
-  public static EngineHandlerInfo getEngineHandlerInfo(Method method, EngineHook hook) {
+  public static EngineHandlerInfo getEngineHandlerInfo(Method method, EngineHook hook, String hookKey) {
     List<EngineFunctionParamInfo> params = new LinkedList<EngineFunctionParamInfo>();
     params.add(new EngineFunctionParamInfo("_User".equals(hook.className()) ? AVUser.class
         : AVObject.class, OBJECT));
     if (EngineHookType.beforeUpdate.equals(hook.type())) {
       return new BeforeUpdateHookHandlerInfo(EndpointParser.getInternalEndpoint(hook.className(),
-          hook.type()), method, params, null, hook.className());
+          hook.type()), method, params, null, hookKey, hook.className());
     }
     return new EngineHookHandlerInfo(EndpointParser.getInternalEndpoint(hook.className(),
-        hook.type()), method, params, null, hook.className());
+        hook.type()), method, params, null, hookKey, hook.className());
   }
 
-  public static EngineHandlerInfo getEngineHandlerInfo(Method method, IMHook hook) {
+  public static EngineHandlerInfo getEngineHandlerInfo(Method method, IMHook hook, String hookKey) {
     List<EngineFunctionParamInfo> params = new LinkedList<EngineFunctionParamInfo>();
     params.add(new EngineFunctionParamInfo(Map.class, OBJECT));
-    return new IMHookHandlerInfo(hook.type().toString(), method, params, Map.class);
+    return new IMHookHandlerInfo(hook.type().toString(), method, params, Map.class, hookKey);
   }
 }

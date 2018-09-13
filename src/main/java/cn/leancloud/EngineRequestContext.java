@@ -7,9 +7,8 @@ import java.util.Map;
 
 /**
  * 在云代码函数中获取请求相关的额外属性
- * 
- * @author lbt05
  *
+ * @author lbt05
  */
 public class EngineRequestContext {
 
@@ -18,7 +17,7 @@ public class EngineRequestContext {
   private static final String SESSION_TOKEN = "_sessionToken";
   private static final String BEFORE_KEYS = "__before";
   private static final String AFTER_KEYS = "__after";
-  static ThreadLocal<Map<String, Object>> localMeta = new ThreadLocal<Map<String, Object>>();
+  private static ThreadLocal<Map<String, Object>> localMeta = new ThreadLocal<>();
 
   @Deprecated
   public static Map<String, Object> getMeta() {
@@ -27,16 +26,17 @@ public class EngineRequestContext {
 
   /**
    * 在 beforeUpdate 函数中调用可以查看 avobject 的哪些属性被更新了
-   * 
+   *
    * @return 被更新的属性
    */
+  @SuppressWarnings("unchecked")
   public static List<String> getUpdateKeys() {
     return (List) get(UPDATED_KEYS);
   }
 
   /**
    * 获取发起请求的 IP 地址
-   * 
+   *
    * @return 发起请求的 IP 地址
    */
   public static String getRemoteAddress() {
@@ -44,7 +44,7 @@ public class EngineRequestContext {
   }
 
   protected static void parseMetaData(Map<String, Object> objectProperties) {
-    Map<String, Object> meta = new HashMap<String, Object>();
+    Map<String, Object> meta = new HashMap<>();
     if (objectProperties == null) {
       return;
     }

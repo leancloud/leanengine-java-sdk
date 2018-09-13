@@ -1,26 +1,31 @@
 package cn.leancloud;
 
-import java.lang.reflect.Method;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.alibaba.fastjson.JSON;
 import com.avos.avoscloud.AVObject;
 import com.avos.avoscloud.AVUser;
 import com.avos.avoscloud.AVUtils;
 
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public class EngineHookHandlerInfo extends EngineHandlerInfo {
 
   public EngineHookHandlerInfo(String endpoint, Method handlerMethod,
-      List<EngineFunctionParamInfo> params, Class returnType, String hookClass) {
-    super(endpoint, handlerMethod, params, returnType, hookClass);
+                               List<EngineFunctionParamInfo> params, Class returnType, String hookKey, String hookClass) {
+    super(endpoint, handlerMethod, params, returnType, hookKey, hookClass);
   }
 
   @Override
-  public Object parseParams(String requestBody) throws InvalidParameterException {
+  public Object parseParams(String requestBody) {
     Map<String, Object> hookParams = JSON.parseObject(requestBody, Map.class);
+    Map currentUser = (Map) hookParams.get("user");
+    if (currentUser != null) {
+      AVUser user = new AVUser();
+      AVUtils.copyPropertiesFromMapToAVObject(currentUser, user);
+      AVUser.changeCurrentUser(user, true);
+    }
     AVObject param = null;
     EngineFunctionParamInfo paramInfo = methodParameterList.get(0);
     if (AVUser.class.isAssignableFrom(paramInfo.type)) {
@@ -43,14 +48,6 @@ public class EngineHookHandlerInfo extends EngineHandlerInfo {
       objectMapping.remove("__type");
       objectMapping.remove("className");
       hookParams.putAll(objectMapping);
-    }
-    long ts = new Date().getTime();
-    String sign = LeanEngine.hmacSha1(endPoint + ":" + ts, LeanEngine.getMasterKey());
-    if (endPoint.startsWith("__before")) {
-      hookParams.put("__before", ts + "," + sign);
-    }
-    if (endPoint.startsWith("__after")) {
-      hookParams.put("__after", ts + "," + sign);
     }
     return hookParams;
   }

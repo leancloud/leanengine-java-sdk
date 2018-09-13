@@ -1,69 +1,98 @@
 package cn.leancloud.leanengine_test;
 
-import java.util.EnumSet;
 
-import javax.servlet.DispatcherType;
-
-import cn.leancloud.*;
-import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.servlet.ServletHandler;
+import cn.leancloud.LeanEngine;
+import cn.leancloud.leanengine_test.data.Todo;
+import com.alibaba.fastjson.JSON;
+import com.avos.avoscloud.AVOSCloud;
+import com.avos.avoscloud.AVObject;
+import com.avos.avoscloud.AVUser;
+import com.avos.avoscloud.AVUtils;
+import com.avos.avoscloud.okhttp.*;
 import org.junit.After;
 import org.junit.Before;
 
-import com.avos.avoscloud.AVOSCloud;
-import com.avos.avoscloud.AVObject;
-import com.avos.avoscloud.okhttp.OkHttpClient;
-import com.avos.avoscloud.okhttp.Request;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
-import cn.leancloud.leanengine_test.data.Todo;
+import static org.junit.Assert.assertEquals;
 
 public class EngineBasicTest {
 
-  private static Server server;
-  private static int port = 3000;
-
-  String secret = "05XgTktKPMkU";
   OkHttpClient client = new OkHttpClient();
+  private LeanEngine engine;
 
   @Before
   public void setUp() throws Exception {
-    System.setProperty("LEANCLOUD_APP_PORT", "3000");
     AVObject.registerSubclass(Todo.class);
-    LeanEngine.initialize(getAppId(), getAppKey(), getMasterKey());
-    LeanEngine.setLocalEngineCallEnabled(true);
-    LeanEngine.setUseMasterKey(true);
-    LeanEngine.addSessionCookie(new EngineSessionCookie(secret, 160000, true));
     AVOSCloud.setDebugLogEnabled(true);
-
-    server = new Server(port);
-    ServletHandler handler = new ServletHandler();
-    server.setHandler(handler);
-    handler.addServletWithMapping(LeanEngineHealthCheckServlet.class, "/__engine/1/ping");
-    handler.addServletWithMapping(CloudCodeServlet.class, "/1.1/functions/*");
-    handler.addServletWithMapping(CloudCodeServlet.class, "/1.1/call/*");
-    handler.addServletWithMapping(LeanEngineMetadataServlet.class, "/1.1/functions/_ops/metadatas");
-    handler.addServletWithMapping(HelloServlet.class, "/hello");
-
-    handler.addFilterWithMapping(HttpsRequestRedirectFilter.class, "/*",
-        EnumSet.of(DispatcherType.INCLUDE, DispatcherType.REQUEST));
-
-    handler.addFilterWithMapping(RequestUserAuthFilter.class, "/*",
-        EnumSet.of(DispatcherType.INCLUDE, DispatcherType.REQUEST));
-    server.start();
+    System.setProperty("LEANCLOUD_APP_ID", getAppId());
+    System.setProperty("LEANCLOUD_APP_KEY", getAppKey());
+    System.setProperty("LEANCLOUD_APP_MASTER_KEY", getMasterKey());
+    System.setProperty("LEANCLOUD_APP_HOOK_KEY", getHookKey());
+    System.setProperty("LEANCLOUD_APP_PORT", "3000");
+    System.setProperty("LEANCLOUD_APP_ENV", "development");
+    engine = new LeanEngine()
+        .register(new Class[]{AllEngineFunctions.class, AllEngineHook.class, AllIMHook.class})
+        .setLocalEngineCallEnabled(true)
+        .setUseMasterKey(true)
+        .start();
   }
 
   @After
   public void teardown() throws Exception {
-    server.stop();
+    engine.stop();
   }
 
   public Request.Builder getBasicTestRequestBuilder() {
     Request.Builder builder = new Request.Builder();
     builder.addHeader("X-LC-Id", getAppId());
-    builder.addHeader("X-LC-Key", getAppKey());
-    builder.addHeader("x-uluru-master-key", getMasterKey());
+    builder.addHeader("X-LC-Key", getMasterKey() + ",master");
     builder.addHeader("Content-Type", getContentType());
     return builder;
+  }
+
+  protected String request(String path, String appKey, String sign, String hookKey, String content, int expectedStatusCode) {
+    Request.Builder builder = new Request.Builder();
+    builder.addHeader("X-LC-Id", getAppId());
+    if (appKey != null) {
+      builder.addHeader("X-LC-key", appKey);
+    }
+    if (sign != null) {
+      builder.addHeader("x-lc-sign", sign);
+    }
+    if (hookKey != null) {
+      builder.addHeader("X-LC-Hook-key", hookKey);
+    }
+    builder.addHeader("Content-Type", getContentType());
+    builder.url("http://localhost:3000" + path);
+    builder.post(RequestBody.create(MediaType.parse(getContentType()), content));
+    try {
+      Response response = client.newCall(builder.build()).execute();
+      assertEquals(expectedStatusCode, response.code());
+      return new String(response.body().bytes());
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  protected Map requestHook(String className, String action, final Map<String, Object> object, int expectedStatusCode) {
+    return requestHook(className, action, object, null, expectedStatusCode);
+  }
+
+  protected Map requestHook(String className, String action, final Map<String, Object> object, final AVUser currentUser, int expectedStatusCode) {
+    String content = JSON.toJSONString(new HashMap() {{
+      put("object", object);
+      if (currentUser != null) {
+        Map user = (Map) AVUtils.getParsedObject(currentUser, true, true, true);
+        user.remove("__type");
+        user.remove("className");
+        put("user", user);
+      }
+    }});
+    String response = request(String.format("/1.1/functions/%s/%s", className, action), getAppKey(), null, getHookKey(), content, expectedStatusCode);
+    return JSON.parseObject(response, Map.class);
   }
 
   protected String getAppId() {
@@ -76,6 +105,10 @@ public class EngineBasicTest {
 
   protected String getMasterKey() {
     return "3v7z633lzfec9qzx8sjql6zimvdpmtwypcchr2gelu5mrzb0";
+  }
+
+  protected String getHookKey() {
+    return "qlkcRqv9v5J5A11Byr3mzori";
   }
 
   protected String getContentType() {

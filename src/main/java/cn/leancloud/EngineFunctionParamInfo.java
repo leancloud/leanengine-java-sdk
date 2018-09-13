@@ -1,20 +1,16 @@
 package cn.leancloud;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
 import com.alibaba.fastjson.JSON;
 import com.avos.avoscloud.AVObject;
 import com.avos.avoscloud.AVUtils;
+
+import java.util.*;
 
 public class EngineFunctionParamInfo {
   final String name;
   final Class type;
 
-  public EngineFunctionParamInfo(Class type, String name) {
+  EngineFunctionParamInfo(Class type, String name) {
     this.name = name;
     this.type = type;
   }
@@ -27,6 +23,7 @@ public class EngineFunctionParamInfo {
     return type;
   }
 
+  @SuppressWarnings("unchecked")
   public Object parseParams(String content) {
     if (AVObject.class.isAssignableFrom(type)) {
       return AVUtils.parseObjectFromMap(JSON.parseObject(content));
@@ -41,7 +38,8 @@ public class EngineFunctionParamInfo {
     }
   }
 
-  public Collection parseParams(Collection collection) {
+  @SuppressWarnings("unchecked")
+  private Collection parseParams(Collection collection) {
     List result = new LinkedList();
     for (Object o : collection) {
       if (o instanceof Map) {
@@ -55,7 +53,8 @@ public class EngineFunctionParamInfo {
     return result;
   }
 
-  public Object parseParams(Map<String, Object> map) {
+  @SuppressWarnings("unchecked")
+  private Object parseParams(Map<String, Object> map) {
     if (map != null && map.containsKey("className") && map.containsKey("__type")
         && "Object".equals(map.get("__type"))) {
       // 这肯定是一个AVObject吧
@@ -63,9 +62,9 @@ public class EngineFunctionParamInfo {
       AVUtils.copyPropertiesFromMapToAVObject(map, object);
       return object;
     } else if (map != null) {
-      HashMap result = new HashMap();
+      Map<String, Object> result = new HashMap<>();
       for (Map.Entry<String, Object> entry : map.entrySet()) {
-        Object parsedValue = null;
+        Object parsedValue;
         if (entry.getValue() instanceof Map) {
           parsedValue = parseParams((Map) entry.getValue());
         } else if (entry.getValue() instanceof Collection) {

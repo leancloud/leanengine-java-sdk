@@ -27,7 +27,6 @@ public class EndpointParser {
 
     if (splited.length == 4) {
       if (splited[2].equals("functions") || splited[2].equals("call")) {
-        RequestUserParser.parse(req);
         IMHookType hookType = IMHookType.parse(splited[3]);
         return new EndpointInfo(splited[3], hookType == null ? true : hookType.isResponseNeed,
             splited[2].equals("call"));

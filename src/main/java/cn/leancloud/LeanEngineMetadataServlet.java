@@ -1,40 +1,37 @@
 package cn.leancloud;
 
-import java.io.IOException;
+import com.alibaba.fastjson.JSONObject;
 
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
-import com.alibaba.fastjson.JSONObject;
-import com.avos.avoscloud.AVUtils;
-
-@WebServlet(name = "LeanEngineMetadataServlet",
-    urlPatterns = {"/1/functions/_ops/metadatas", "/1.1/functions/_ops/metadatas"},
-    loadOnStartup = 5)
 public class LeanEngineMetadataServlet extends HttpServlet {
 
   private static final long serialVersionUID = 171155874009103794L;
+  private final LeanEngine engine;
+
+  LeanEngineMetadataServlet(LeanEngine engine) {
+    this.engine = engine;
+  }
 
   @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp)
       throws ServletException, IOException {
     try {
-      RequestAuth.auth(req);
-      RequestAuth auth = (RequestAuth) req.getAttribute(RequestAuth.ATTRIBUTE_KEY);
-      if (auth == null || AVUtils.isBlankString(auth.getMasterKey())) {
+      Object authMasterKey = req.getAttribute(AuthFilter.ATTRIBUTE_AUTH_MASTER_KEY);
+      if (authMasterKey == null || !(boolean) authMasterKey) {
         throw new UnauthException();
       }
+
+      resp.setContentType(LeanEngine.JSON_CONTENT_TYPE);
+      JSONObject result = new JSONObject();
+      result.put("result", engine.getMetaData());
+      resp.getWriter().write(result.toJSONString());
     } catch (UnauthException e) {
       e.resp(resp);
-      e.printStackTrace();
-      return;
     }
-    resp.setContentType(LeanEngine.JSON_CONTENT_TYPE);
-    JSONObject result = new JSONObject();
-    result.put("result", LeanEngine.getMetaData());
-    resp.getWriter().write(result.toJSONString());
   }
 }

@@ -1,63 +1,35 @@
 package cn.leancloud.leanengine_test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import com.avos.avoscloud.*;
+import org.junit.Test;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletResponse;
-
-import org.junit.Test;
-
-import com.alibaba.fastjson.JSON;
-import com.avos.avoscloud.AVCloud;
-import com.avos.avoscloud.AVException;
-import com.avos.avoscloud.AVObject;
-import com.avos.avoscloud.AVUser;
-import com.avos.avoscloud.AVUtils;
-import com.avos.avoscloud.okhttp.MediaType;
-import com.avos.avoscloud.okhttp.OkHttpClient;
-import com.avos.avoscloud.okhttp.Request;
-import com.avos.avoscloud.okhttp.RequestBody;
-import com.avos.avoscloud.okhttp.Response;
-
-import cn.leancloud.LeanEngine;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 public class EngineHookTest extends EngineBasicTest {
 
-  @Override
-  public void setUp() throws Exception {
-    super.setUp();
-    LeanEngine.register(AllEngineHook.class);
-  }
-
   @Test
   public void testHook() throws Exception {
-    String content = "{\"object\":{\"star\":35}}";
-    OkHttpClient client = new OkHttpClient();
-    Request.Builder builder = this.getBasicTestRequestBuilder();
-    builder.url("http://localhost:3000/1.1/functions/hello/beforeSave");
-    builder.post(RequestBody.create(MediaType.parse(getContentType()), content));
-    Response response = client.newCall(builder.build()).execute();
-    assertEquals(HttpServletResponse.SC_OK, response.code());
-    assertTrue(new String(response.body().bytes()).indexOf("\"star\":30") != -1);
+    Map<String, Object> object = new HashMap() {{
+      put("star", 35);
+    }};
+    Map result = requestHook("hello", "beforeSave", object, 200);
+    assertEquals(30, result.get("star"));
   }
 
   @Test
   public void testHookWithErrorResponseStatus() throws Exception {
-    String content = "{\"object\":{\"star\":100}}";
-    OkHttpClient client = new OkHttpClient();
-    Request.Builder builder = this.getBasicTestRequestBuilder();
-    builder.url("http://localhost:3000/1.1/functions/hello/beforeSave");
-    builder.post(RequestBody.create(MediaType.parse(getContentType()), content));
-    Response response = client.newCall(builder.build()).execute();
-    assertEquals(HttpServletResponse.SC_BAD_REQUEST, response.code());
-    assertEquals("{\"code\":400,\"error\":\"star should less than 50\"}",
-        new String(response.body().bytes()));
+    Map<String, Object> object = new HashMap() {{
+      put("star", 100);
+    }};
+    Map result = requestHook("hello", "beforeSave", object, 400);
+    assertEquals("star should less than 50", result.get("error"));
   }
 
   @Test
@@ -83,30 +55,24 @@ public class EngineHookTest extends EngineBasicTest {
 
   @Test
   public void testOnLogin2() throws IOException {
-    String content =
-        "{\"object\":{\"objectId\":\"57c3b6110a2b58006cfb7be7\",\"username\":\"testUser\","
-            + "\"__sign\":\"1470492196423,ecb100deddd9bcf45dc5450fdc199c294e3ffe7d\"}}";
-    OkHttpClient client = new OkHttpClient();
-    Request.Builder builder = this.getBasicTestRequestBuilder();
-    builder.url("http://localhost:3000/1.1/functions/_User/onLogin");
-    builder.post(RequestBody.create(MediaType.parse(getContentType()), content));
-    Response response = client.newCall(builder.build()).execute();
-    assertEquals(HttpServletResponse.SC_OK, response.code());
-    assertEquals("{}", response.body().string());
+    Map<String, Object> object = new HashMap() {{
+      put("objectId", "57c3b6110a2b58006cfb7be7");
+      put("username", "testUser");
+      put("__sign", "1470492196423,ecb100deddd9bcf45dc5450fdc199c294e3ffe7d");
+    }};
+    Map result = requestHook("_User", "onLogin", object, 200);
+    assertEquals(Collections.emptyMap(), result);
   }
 
   @Test
   public void testOnLogin_error() throws IOException {
-    String content =
-        "{\"object\":{\"objectId\":\"576ccfbbd342d30057b6e5af\",\"username\":\"spamUser\","
-            + "\"__sign\":\"1470492196423,ecb100deddd9bcf45dc5450fdc199c294e3ffe7d\"}}";
-    OkHttpClient client = new OkHttpClient();
-    Request.Builder builder = this.getBasicTestRequestBuilder();
-    builder.url("http://localhost:3000/1.1/functions/_User/onLogin");
-    builder.post(RequestBody.create(MediaType.parse(getContentType()), content));
-    Response response = client.newCall(builder.build()).execute();
-    assertEquals(HttpServletResponse.SC_BAD_REQUEST, response.code());
-    assertEquals("{\"code\":400,\"error\":\"forbidden\"}", response.body().string());
+    Map<String, Object> object = new HashMap() {{
+      put("objectId", "576ccfbbd342d30057b6e5af");
+      put("username", "spamUser");
+      put("__sign", "1470492196423,ecb100deddd9bcf45dc5450fdc199c294e3ffe7d");
+    }};
+    Map result = requestHook("_User", "onLogin", object, 400);
+    assertEquals("forbidden", result.get("error"));
   }
 
   @Test
@@ -151,18 +117,20 @@ public class EngineHookTest extends EngineBasicTest {
 
   @Test
   public void testBeforeUpdate2() throws Exception {
-    String content = "{\"object\":{\"star\":35,\"ACL\":{\"*\":{\"write\":true,\"read\":true}}" //
-        + ",\"createdAt\":\"2016-08-06T11:22:54.489Z\",\"updatedAt\":\"2016-08-06T14:03:16.422Z\"" //
-        + ",\"objectId\":\"57a6bf9c8ac247005f2d8c7b\",\"_updatedKeys\":[\"comment\"]," //
-        + "\"__before\":\"1470492196423,ecb100deddd9bcf45dc5450fdc199c294e3ffe7d\"},\"user\":null}";
-    OkHttpClient client = new OkHttpClient();
-    Request.Builder builder = this.getBasicTestRequestBuilder();
-    builder.url("http://localhost:3000/1.1/functions/TestReview/beforeUpdate");
-    builder.post(RequestBody.create(MediaType.parse(getContentType()), content));
-    Response response = client.newCall(builder.build()).execute();
-    assertEquals(HttpServletResponse.SC_OK, response.code());
-    assertEquals(JSON.parseObject(content, Map.class).get("object"),
-        JSON.parseObject(response.body().string(), Map.class));
+    Map<String, Object> object = new HashMap() {{
+      put("objectId", "57a6bf9c8ac247005f2d8c7b");
+      put("star", 35);
+      put("ACL", new HashMap() {{
+        put("*", new HashMap() {{
+          put("write", true);
+          put("read", true);
+        }});
+      }});
+      put("createdAt", "2016-08-06T11:22:54.489Z");
+      put("updatedAt", "2016-08-06T14:03:16.422Z");
+      put("_updatedKeys", new String[]{"comment"});
+    }};
+    requestHook("TestReview", "beforeUpdate", object, 200);
   }
 
   @Test
@@ -210,44 +178,23 @@ public class EngineHookTest extends EngineBasicTest {
 
   @Test
   public void testSubObjectHook() throws Exception {
-    String content = "{\"object\":{\"content\":\"shit\"}}";
-    OkHttpClient client = new OkHttpClient();
-    Request.Builder builder = this.getBasicTestRequestBuilder();
-    builder.url("http://localhost:3000/1.1/functions/Todo/beforeSave");
-    builder.post(RequestBody.create(MediaType.parse(getContentType()), content));
-    Response response = client.newCall(builder.build()).execute();
-    assertEquals(HttpServletResponse.SC_OK, response.code());
+    Map<String, Object> object = new HashMap() {{
+      put("content", "Hello World!");
+    }};
+    requestHook("Todo", "beforeSave", object, 200);
   }
 
   @Test
-  public void testUserBeforeSaveHook() throws IOException {
-    String content = "{" //
-        + "  \"object\": {" //
-        + "    \"username\": \"admin\"," //
-        + "    \"sessionToken\": \"z68j4zxkl0rbqmft1p1ci82vs\"," //
-        + "    \"mobilePhoneVerified\": false," //
-        + "    \"emailVerified\": false," //
-        + "    \"__before\": \"1476674356675,96e59638f8b2656a2159a4f00f06873fb4a5f1e4\"" //
-        + "  }," //
-        + "  \"user\": {" //
-        + "    \"sessionToken\": \"zpsy8zrk4uy8mkxg1k2ssouz1\"," //
-        + "    \"updatedAt\": \"2016-10-17T03:10:37.545Z\"," //
-        + "    \"objectId\": \"5804412da0bb9f00588c039e\"," //
-        + "    \"username\": \"testUser\"," //
-        + "    \"createdAt\": \"2016-10-17T03:10:37.545Z\"," //
-        + "    \"emailVerified\": false," //
-        + "    \"mobilePhoneVerified\": false" //
-        + "  }" //
-        + "}";
-    OkHttpClient client = new OkHttpClient();
-    Request.Builder builder = this.getBasicTestRequestBuilder();
-    builder.url("http://localhost:3000/1.1/functions/_User/beforeSave");
-    builder.post(RequestBody.create(MediaType.parse(getContentType()), content));
-    Response response = client.newCall(builder.build()).execute();
-    assertEquals(HttpServletResponse.SC_OK, response.code());
-    String body = new String(response.body().bytes());
-    assertTrue(body.indexOf("\"username\":\"admin\"") != -1);
-    assertTrue(body.indexOf("\"beforeSave\":[true]") != -1);
+  public void testHook_currentUser() throws IOException, AVException {
+    Map<String, Object> object = new HashMap() {{
+      put("content", "Hello World!");
+    }};
+    AVUser user = AVUser.becomeWithSessionToken("w2jrtkbehp38otqmhbqu7ybs9");
+    Map result = requestHook("Todo", "beforeSave", object, user, 200);
+    assertEquals("54fd6a03e4b06c41e00b1f40", ((Map) result.get("author")).get("objectId"));
+
+    result = requestHook("Todo", "beforeSave", object, 200);
+    assertNull(result.get("author"));
   }
 
 }

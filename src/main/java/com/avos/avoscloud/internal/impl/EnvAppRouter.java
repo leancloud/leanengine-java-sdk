@@ -1,14 +1,13 @@
 package com.avos.avoscloud.internal.impl;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import cn.leancloud.EngineAppConfiguration;
 import com.avos.avoscloud.AVException;
 import com.avos.avoscloud.AVOSServices;
 import com.avos.avoscloud.FunctionCallback;
 import com.avos.avoscloud.internal.AppRouter;
 
-import cn.leancloud.EngineAppConfiguration;
+import java.util.HashMap;
+import java.util.Map;
 
 public class EnvAppRouter extends AppRouter {
 
@@ -21,7 +20,7 @@ public class EnvAppRouter extends AppRouter {
 
   @Override
   protected void fetchServerHosts(boolean sync,
-      final FunctionCallback<Map<AVOSServices, String>> cb) {
+                                  final FunctionCallback<Map<AVOSServices, String>> cb) {
     Map<AVOSServices, String> result = new HashMap<AVOSServices, String>();
     String apiServer = appConf.getEnvOrProperty("LEANCLOUD_API_SERVER");
     if (apiServer != null) {
@@ -41,22 +40,22 @@ public class EnvAppRouter extends AppRouter {
     DefaultAppRouter.instance().fetchServerHosts(sync,
         new FunctionCallback<Map<AVOSServices, String>>() {
 
-      @Override
-      public void done(Map<AVOSServices, String> hosts, AVException e) {
-        if (e != null) {
-          cb.done(null, e);
-          return;
-        }
-        if (isLocalEngineCall) {
-          hosts.put(AVOSServices.ENGINE, "http://0.0.0.0:" + appConf.getPort());
-        }
-        cb.done(hosts, null);
-      }
-    });
+          @Override
+          public void done(Map<AVOSServices, String> hosts, AVException e) {
+            if (e != null) {
+              cb.done(null, e);
+              return;
+            }
+            if (isLocalEngineCall) {
+              hosts.put(AVOSServices.ENGINE, "http://0.0.0.0:" + appConf.getPort());
+            }
+            cb.done(hosts, null);
+          }
+        });
   }
 
   public void setLocalEngineCallEnabled(boolean enabled) {
-    isLocalEngineCall  = enabled;
+    isLocalEngineCall = enabled;
   }
 
 }

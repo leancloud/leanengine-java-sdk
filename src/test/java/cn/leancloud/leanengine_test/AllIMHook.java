@@ -1,12 +1,12 @@
 package cn.leancloud.leanengine_test;
 
-import java.util.HashMap;
-import java.util.Map;
+import cn.leancloud.IMHook;
+import cn.leancloud.IMHookType;
 import com.alibaba.fastjson.JSONObject;
 import com.avos.avoscloud.AVUtils;
 
-import cn.leancloud.IMHook;
-import cn.leancloud.IMHookType;
+import java.util.HashMap;
+import java.util.Map;
 
 public class AllIMHook {
 
